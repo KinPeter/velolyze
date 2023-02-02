@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { PrimeNGConfig } from 'primeng/api'
+import { FirebaseAppService } from './firebase/firebase-app.service'
 
 @Component({
   selector: 'velo-root',
@@ -22,9 +23,13 @@ import { PrimeNGConfig } from 'primeng/api'
 export class AppComponent implements OnInit {
   title = 'velolyze'
 
-  constructor(private primeNgConfig: PrimeNGConfig) {}
+  constructor(
+    private primeNgConfig: PrimeNGConfig,
+    private firebaseAppService: FirebaseAppService
+  ) {}
 
   public ngOnInit() {
     this.primeNgConfig.ripple = true
+    this.firebaseAppService.initializeFirebaseApp()
   }
 }
