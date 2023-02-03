@@ -20,6 +20,7 @@ export class FirebaseAppService {
       appId: environment.FIREBASE_APP_ID,
       measurementId: environment.FIREBASE_MEASUREMENT_ID,
     }
+    this.initializeFirebaseApp()
   }
 
   public get app(): FirebaseApp {
