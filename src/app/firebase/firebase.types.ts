@@ -1,3 +1,5 @@
+import { WhereFilterOp } from 'firebase/firestore'
+
 export interface FirebaseConfig {
   apiKey: string
   authDomain: string
@@ -6,4 +8,15 @@ export interface FirebaseConfig {
   messagingSenderId: string
   appId: string
   measurementId: string
+}
+
+export enum FirestoreCollection {
+  COMMON = 'common',
+  ACTIVITIES = 'ACTIVITIES',
+}
+
+export interface FirestoreWhereClause {
+  field: string
+  operator: WhereFilterOp
+  value: string
 }

@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import { PrimeNGConfig } from 'primeng/api'
 import { FirebaseAuthService } from './firebase/firebase-auth.service'
+import { FirestoreService } from './firebase/firestore.service'
 
 @Component({
   selector: 'velo-root',
@@ -42,7 +43,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private primeNgConfig: PrimeNGConfig,
-    private firebaseAuthService: FirebaseAuthService
+    private firebaseAuthService: FirebaseAuthService,
+    private firestoreService: FirestoreService
   ) {
     this.firebaseAuthService.user$.subscribe(user => {
       this.isLoggedIn = !!user
