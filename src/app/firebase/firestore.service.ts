@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core'
 import { FirebaseAppService } from './firebase-app.service'
-import { collection, query, where, Firestore, getFirestore, getDocs } from 'firebase/firestore'
+import {
+  collection,
+  query,
+  where,
+  Firestore,
+  getFirestore,
+  getDocs,
+  QueryConstraint,
+} from 'firebase/firestore'
 import { FirestoreCollection, FirestoreWhereClause } from './firebase.types'
 
 @Injectable({ providedIn: 'root' })
@@ -9,25 +17,41 @@ export class FirestoreService {
 
   constructor(private firebaseAppService: FirebaseAppService) {
     this.db = getFirestore(this.firebaseAppService.app)
-    this.query(FirestoreCollection.COMMON, {
-      field: 'name',
-      operator: '==',
-      value: 'stravaClient',
-    }).then(result => {
+    this.queryOne(FirestoreCollection.COMMON, [
+      { field: 'name', operator: '==', value: 'stravaClient' },
+      { field: 'stravaClientId', operator: '==', value: '101671' },
+    ]).then(result => {
       console.log('queryResult', result)
     })
   }
 
-  public async query<T>(collectionName: string, whereClause: FirestoreWhereClause): Promise<T[]> {
+  public async query<T>(
+    collectionName: string,
+    criteria: FirestoreWhereClause | FirestoreWhereClause[]
+  ): Promise<T[]> {
     try {
-      const { field, operator, value } = whereClause
+      const constraints: QueryConstraint[] = Array.isArray(criteria)
+        ? criteria.map(({ field, operator, value }) => where(field, operator, value))
+        : [where(criteria.field, criteria.operator, criteria.value)]
       const collectionRef = collection(this.db, collectionName)
-      const q = query(collectionRef, where(field, operator, value))
+      const q = query(collectionRef, ...constraints)
       const querySnapshot = await getDocs(q)
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T))
     } catch (e) {
       console.log('Fetch failed from firestore', e)
-      return []
+      return [] as T[]
     }
+  }
+
+  public async queryOne<T>(
+    collectionName: string,
+    criteria: FirestoreWhereClause | FirestoreWhereClause[]
+  ): Promise<T | null> {
+    const resultsArray = await this.query<T>(collectionName, criteria)
+    if (!resultsArray.length) return null
+    if (resultsArray.length > 1) {
+      throw new Error('queryOne method actually found more matches, please check your query!')
+    }
+    return resultsArray[0]
   }
 }
