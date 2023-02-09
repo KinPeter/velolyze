@@ -13,13 +13,13 @@ import { FirebaseAppService } from './firebase-app.service'
 
 interface FirebaseAuthState {
   user: User | null
-  isLoggedIn: boolean
+  isLoggedIn: boolean | undefined
   token: string | undefined
 }
 
 const initialState: FirebaseAuthState = {
   user: null,
-  isLoggedIn: false,
+  isLoggedIn: undefined,
   token: undefined,
 }
 
@@ -40,6 +40,7 @@ export class FirebaseAuthService extends Store<FirebaseAuthState> {
     super(initialState)
     this.provider = new GoogleAuthProvider()
     this.auth = getAuth()
+    this.setState({ user: this.auth.currentUser })
     onAuthStateChanged(this.auth, user => {
       if (user) {
         this.setState({ user, isLoggedIn: true })

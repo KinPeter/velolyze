@@ -2,6 +2,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import { PrimeNGConfig } from 'primeng/api'
 import { FirebaseAuthService } from './firebase/firebase-auth.service'
 import { FirestoreService } from './firebase/firestore.service'
+import { filter } from 'rxjs'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'velo-root',
@@ -19,6 +21,8 @@ import { FirestoreService } from './firebase/firestore.service'
     <div class="avatar" #avatar></div>
     <p-button *ngIf="!isLoggedIn" label="Log in" (onClick)="login()"></p-button>
     <p-button *ngIf="isLoggedIn" label="Log out" (onClick)="logOut()"></p-button>
+    <a routerLink="/strava">Strava</a><br />
+    <a routerLink="/main">main</a><br />
     <router-outlet></router-outlet>
   `,
   styles: [
@@ -44,12 +48,18 @@ export class AppComponent implements OnInit {
   constructor(
     private primeNgConfig: PrimeNGConfig,
     private firebaseAuthService: FirebaseAuthService,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private router: Router
   ) {
     this.firebaseAuthService.user$.subscribe(user => {
       this.isLoggedIn = !!user
       this.setAvatarImage(user?.photoURL)
     })
+    this.firebaseAuthService.isLoggedIn$
+      .pipe(filter(value => value !== undefined))
+      .subscribe(isLoggedIn => {
+        this.router.navigate([isLoggedIn ? '/main' : '/login']).then()
+      })
   }
 
   public ngOnInit() {
