@@ -3,13 +3,13 @@ import { BrowserModule } from '@angular/platform-browser'
 
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { PrimeNgModule } from './prime-ng/prime-ng.module'
 import { AuthGuard } from './modules/auth/auth.guard'
+import { SharedModule } from './modules/shared/shared.module'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, PrimeNgModule, AppRoutingModule],
+  imports: [BrowserModule, BrowserAnimationsModule, AppRoutingModule, SharedModule],
   providers: [AuthGuard],
   bootstrap: [AppComponent],
 })
