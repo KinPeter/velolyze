@@ -9,7 +9,7 @@ import {
   getDocs,
   QueryConstraint,
 } from 'firebase/firestore'
-import { FirestoreCollection, FirestoreWhereClause } from './firebase.types'
+import { FirestoreWhereClause } from './firebase.types'
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
@@ -17,12 +17,6 @@ export class FirestoreService {
 
   constructor(private firebaseAppService: FirebaseAppService) {
     this.db = getFirestore(this.firebaseAppService.app)
-    this.queryOne(FirestoreCollection.COMMON, [
-      { field: 'name', operator: '==', value: 'stravaClient' },
-      { field: 'stravaClientId', operator: '==', value: '101671' },
-    ]).then(result => {
-      console.log('queryResult', result)
-    })
   }
 
   public async query<T>(

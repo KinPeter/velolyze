@@ -1,5 +1,7 @@
-import { Component } from '@angular/core'
+import { Component, NgZone } from '@angular/core'
 import { FirebaseAuthService } from '../../firebase/firebase-auth.service'
+import { filter } from 'rxjs'
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'velo-auth',
@@ -27,9 +29,11 @@ import { FirebaseAuthService } from '../../firebase/firebase-auth.service'
   ],
 })
 export class AuthComponent {
-  constructor(private firebaseAuthService: FirebaseAuthService) {}
+  constructor(private firebaseAuthService: FirebaseAuthService, private router: Router) {}
 
   public login() {
-    this.firebaseAuthService.loginWithGoogle().then()
+    this.firebaseAuthService.loginWithGoogle().then(() => {
+      this.router.navigate(['/main']).then()
+    })
   }
 }

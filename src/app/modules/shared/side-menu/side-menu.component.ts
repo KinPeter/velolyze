@@ -1,9 +1,10 @@
-import { Component, ElementRef, EventEmitter, NgZone, Output, ViewChild } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core'
 import { FirebaseAuthService } from '../../../firebase/firebase-auth.service'
 import { Router } from '@angular/router'
 import { filter } from 'rxjs'
 import { MenuItem } from 'primeng/api'
 import { environment } from '../../../../environments/environment'
+import { StravaAuthService } from '../../strava/strava-auth.service'
 
 @Component({
   selector: 'velo-side-menu',
@@ -149,8 +150,8 @@ export class SideMenuComponent {
 
   constructor(
     private firebaseAuthService: FirebaseAuthService,
-    private router: Router,
-    private ngZone: NgZone
+    private stravaAuthService: StravaAuthService,
+    private router: Router
   ) {
     this.firebaseAuthService.user$.subscribe(user => {
       this.isLoggedIn = !!user
@@ -159,9 +160,6 @@ export class SideMenuComponent {
     this.firebaseAuthService.isLoggedIn$
       .pipe(filter(value => value !== undefined))
       .subscribe(isLoggedIn => {
-        this.ngZone.run(() => {
-          this.router.navigate([isLoggedIn ? '/main' : '/login']).then()
-        })
         this.items = isLoggedIn ? this.authenticatedMenuItems : this.loginMenuItems
       })
   }
@@ -172,7 +170,10 @@ export class SideMenuComponent {
   }
 
   public logOut(): void {
-    this.firebaseAuthService.signOutFromFirebase().then()
+    this.firebaseAuthService.signOutFromFirebase().then(() => {
+      this.stravaAuthService.logOut()
+      this.router.navigate(['/login']).then()
+    })
   }
 
   private setAvatarImage(photoUrl: string | null | undefined): void {
