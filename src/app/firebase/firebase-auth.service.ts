@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth'
 import { Store } from '../utils/store'
 import { FirebaseAppService } from './firebase-app.service'
+import { NotificationService } from '../modules/shared/services/notification.service'
 
 interface FirebaseAuthState {
   user: User | null
@@ -36,7 +37,10 @@ export class FirebaseAuthService extends Store<FirebaseAuthState> {
   }
 
   // FirebaseAppService is injected here just to make sure it initializes first
-  constructor(private _firebaseAppService: FirebaseAppService) {
+  constructor(
+    private _firebaseAppService: FirebaseAppService,
+    private notificationService: NotificationService
+  ) {
     super(initialState)
     this.provider = new GoogleAuthProvider()
     this.auth = getAuth()
@@ -61,7 +65,9 @@ export class FirebaseAuthService extends Store<FirebaseAuthState> {
       const errorCode = error.code
       const errorMessage = error.message
       const email = error.customData.email
-      throw new Error(`Login for ${email} failed: ${errorCode} - ${errorMessage}`)
+      const fullMessage = `Login for ${email} failed: ${errorCode} - ${errorMessage}`
+      this.notificationService.showError(fullMessage)
+      throw new Error(fullMessage)
     }
   }
 
@@ -69,7 +75,7 @@ export class FirebaseAuthService extends Store<FirebaseAuthState> {
     try {
       await signOut(this.auth)
     } catch (e) {
-      console.log('Could not sign out')
+      this.notificationService.showError('Could not sign out')
     }
   }
 }

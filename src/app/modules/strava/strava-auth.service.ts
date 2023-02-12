@@ -8,6 +8,7 @@ import { StravaSettingsStore } from './strava-settings.store'
 import { StravaAuthResponse, StravaSettings } from './strava.types'
 import { FirestoreService } from '../../firebase/firestore.service'
 import { FirestoreCollection } from '../../firebase/firebase.types'
+import { NotificationService } from '../shared/services/notification.service'
 
 interface StravaAuthState {
   loading: boolean
@@ -39,7 +40,7 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
   constructor(
     private http: HttpClient,
     private firestoreService: FirestoreService,
-    // private notificationService: NotificationService,
+    private notificationService: NotificationService,
     private settingsStore: StravaSettingsStore
   ) {
     super(StorageKeys.STRAVA_AUTH, initialState)
@@ -114,7 +115,7 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
             })
           },
           error: () => {
-            // TODO this.notificationService.showError('Could not get auth token from Strava')
+            this.notificationService.showError('Could not get auth token from Strava')
             this.setState({ loading: false, disabled: true })
           },
         })
@@ -146,7 +147,7 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
             })
           },
           error: () => {
-            // TODO this.notificationService.showError('Could not refresh token with Strava')
+            this.notificationService.showError('Could not refresh token with Strava')
             this.setState({ loading: false, disabled: true })
           },
         })

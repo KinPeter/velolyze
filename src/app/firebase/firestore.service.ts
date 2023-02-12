@@ -10,12 +10,16 @@ import {
   QueryConstraint,
 } from 'firebase/firestore'
 import { FirestoreWhereClause } from './firebase.types'
+import { NotificationService } from '../modules/shared/services/notification.service'
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
   private readonly db: Firestore
 
-  constructor(private firebaseAppService: FirebaseAppService) {
+  constructor(
+    private firebaseAppService: FirebaseAppService,
+    private notificationService: NotificationService
+  ) {
     this.db = getFirestore(this.firebaseAppService.app)
   }
 
@@ -33,6 +37,7 @@ export class FirestoreService {
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T))
     } catch (e) {
       console.log('Fetch failed from firestore', e)
+      this.notificationService.showError('Fetch failed from firestore')
       return [] as T[]
     }
   }
@@ -44,7 +49,9 @@ export class FirestoreService {
     const resultsArray = await this.query<T>(collectionName, criteria)
     if (!resultsArray.length) return null
     if (resultsArray.length > 1) {
-      throw new Error('queryOne method actually found more matches, please check your query!')
+      const message = 'queryOne method actually found more matches, please check your query!'
+      this.notificationService.showWarning(message)
+      throw new Error(message)
     }
     return resultsArray[0]
   }

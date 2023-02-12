@@ -14,6 +14,7 @@ import { FirestoreService } from './firebase/firestore.service'
     <main [ngClass]="{ open: isMenuOpen }">
       <router-outlet></router-outlet>
     </main>
+    <p-toast position="top-right"></p-toast>
   `,
   styles: [
     `
