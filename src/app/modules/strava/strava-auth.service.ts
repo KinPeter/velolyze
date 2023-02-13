@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http'
-import { Observable, of } from 'rxjs'
+import { filter, Observable, of } from 'rxjs'
 import { tap } from 'rxjs/operators'
 import { Injectable } from '@angular/core'
 import { LocalStore } from '../../utils/store'
@@ -9,6 +9,7 @@ import { StravaAuthResponse, StravaSettings } from './strava.types'
 import { FirestoreService } from '../../firebase/firestore.service'
 import { FirestoreCollection } from '../../firebase/firebase.types'
 import { NotificationService } from '../shared/services/notification.service'
+import { FirebaseAuthService } from '../../firebase/firebase-auth.service'
 
 interface StravaAuthState {
   loading: boolean
@@ -40,20 +41,14 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
   constructor(
     private http: HttpClient,
     private firestoreService: FirestoreService,
+    private firebaseAuthService: FirebaseAuthService,
     private notificationService: NotificationService,
     private settingsStore: StravaSettingsStore
   ) {
     super(StorageKeys.STRAVA_AUTH, initialState)
-    this.firestoreService
-      .queryOne<StravaSettings>(FirestoreCollection.COMMON, {
-        field: 'name',
-        operator: '==',
-        value: 'stravaClient',
-      })
-      .then(result => {
-        if (!result) return
-        this.settingsStore.setSettings(result)
-      })
+    this.firebaseAuthService.isLoggedIn$.pipe(filter(value => value === true)).subscribe(() => {
+      this.fetchSettings()
+    })
     this.settingsStore.stravaSettings.subscribe(settings => {
       if (!settings.stravaClientId || !settings.stravaClientSecret) {
         this.setState({
@@ -164,5 +159,18 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
 
   public logOut(): void {
     this.setState({ ...initialState, needAuth: true })
+  }
+
+  public fetchSettings(): void {
+    this.firestoreService
+      .queryOne<StravaSettings>(FirestoreCollection.COMMON, {
+        field: 'name',
+        operator: '==',
+        value: 'stravaClient',
+      })
+      .then(result => {
+        if (!result) return
+        this.settingsStore.setSettings(result)
+      })
   }
 }

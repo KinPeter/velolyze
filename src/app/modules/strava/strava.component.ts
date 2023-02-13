@@ -5,12 +5,35 @@ import { ActivatedRoute, Router } from '@angular/router'
 
 @Component({
   selector: 'velo-strava',
-  template: `<div>
-    <div *ngIf="needAuth$ | async">
-      <a pButton [href]="stravaOauthUrl">Log in to Strava</a>
-    </div>
-  </div>`,
-  styles: [],
+  template: `
+    <ng-container *ngIf="disabled$ | async">
+      <p-messages severity="warn">
+        <ng-template pTemplate>
+          <i class="pi pi-exclamation-triangle warning-icon"></i>
+          <span>Sorry, it seems Strava service is not available.</span>
+        </ng-template>
+      </p-messages>
+    </ng-container>
+    <ng-container *ngIf="loading$ | async">
+      <p-progressSpinner class="velo-spinner"></p-progressSpinner>
+    </ng-container>
+    <ng-container *ngIf="(loading$ | async) === false && (disabled$ | async) === false">
+      <div *ngIf="needAuth$ | async; else stravaContainer">
+        <a pButton [href]="stravaOauthUrl">Log in to Strava</a>
+      </div>
+      <ng-template #stravaContainer>
+        <div>Strava works!</div>
+      </ng-template>
+    </ng-container>
+  `,
+  styles: [
+    `
+      i.warning-icon {
+        font-size: 1.3rem;
+        margin-right: 1rem;
+      }
+    `,
+  ],
 })
 export class StravaComponent implements OnDestroy {
   public loading$ = this.stravaAuthService.loading$

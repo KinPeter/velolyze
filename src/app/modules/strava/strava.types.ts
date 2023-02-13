@@ -12,6 +12,9 @@ export interface StravaAuthResponse {
   athlete: {
     id: number
     weight: number
+    firstname: string
+    lastname: string
+    profile: string // picture URL
   }
 }
 

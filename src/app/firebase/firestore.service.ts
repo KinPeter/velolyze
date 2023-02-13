@@ -11,22 +11,29 @@ import {
 } from 'firebase/firestore'
 import { FirestoreWhereClause } from './firebase.types'
 import { NotificationService } from '../modules/shared/services/notification.service'
+import { FirebaseAuthService } from './firebase-auth.service'
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
   private readonly db: Firestore
+  private isLoggedIn = false
 
   constructor(
     private firebaseAppService: FirebaseAppService,
+    private firebaseAuthService: FirebaseAuthService,
     private notificationService: NotificationService
   ) {
     this.db = getFirestore(this.firebaseAppService.app)
+    this.firebaseAuthService.isLoggedIn$.subscribe(value => {
+      this.isLoggedIn = !!value
+    })
   }
 
   public async query<T>(
     collectionName: string,
     criteria: FirestoreWhereClause | FirestoreWhereClause[]
   ): Promise<T[]> {
+    if (!this.isLoggedIn) return []
     try {
       const constraints: QueryConstraint[] = Array.isArray(criteria)
         ? criteria.map(({ field, operator, value }) => where(field, operator, value))
