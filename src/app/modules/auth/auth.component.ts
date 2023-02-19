@@ -1,6 +1,5 @@
-import { Component, NgZone } from '@angular/core'
+import { Component } from '@angular/core'
 import { FirebaseAuthService } from '../../firebase/firebase-auth.service'
-import { filter } from 'rxjs'
 import { Router } from '@angular/router'
 
 @Component({

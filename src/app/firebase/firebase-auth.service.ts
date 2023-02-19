@@ -6,52 +6,35 @@ import {
   signOut,
   GoogleAuthProvider,
   onAuthStateChanged,
-  User,
 } from 'firebase/auth'
-import { Store } from '../utils/store'
 import { FirebaseAppService } from './firebase-app.service'
 import { NotificationService } from '../modules/shared/services/notification.service'
-
-interface FirebaseAuthState {
-  user: User | null
-  isLoggedIn: boolean | undefined
-  token: string | undefined
-}
-
-const initialState: FirebaseAuthState = {
-  user: null,
-  isLoggedIn: undefined,
-  token: undefined,
-}
+import { UserMetaService } from '../modules/shared/services/user-meta.service'
+import { AuthStore } from '../modules/shared/services/auth.store'
 
 @Injectable({ providedIn: 'root' })
-export class FirebaseAuthService extends Store<FirebaseAuthState> {
+export class FirebaseAuthService {
   private readonly provider: GoogleAuthProvider
   private readonly auth: Auth
-
-  public isLoggedIn$ = this.select(state => state.isLoggedIn)
-  public user$ = this.select(state => state.user)
-
-  public get currentUser(): User | null {
-    return this.state.user
-  }
 
   // FirebaseAppService is injected here just to make sure it initializes first
   constructor(
     private _firebaseAppService: FirebaseAppService,
-    private notificationService: NotificationService
+    private authStore: AuthStore,
+    private notificationService: NotificationService,
+    private userMetaService: UserMetaService
   ) {
-    super(initialState)
     this.provider = new GoogleAuthProvider()
     this.auth = getAuth()
-    this.setState({ user: this.auth.currentUser })
+    this.authStore.setAuthState({ user: this.auth.currentUser })
     onAuthStateChanged(this.auth, user => {
       if (user) {
-        this.setState({ user, isLoggedIn: true })
+        this.authStore.setAuthState({ user, isLoggedIn: true })
+        this.userMetaService.registerUserMeta(user).then()
       } else {
-        this.setState({ user: null, token: undefined, isLoggedIn: false })
+        this.authStore.setAuthState({ user: null, token: undefined, isLoggedIn: false })
       }
-      console.log('auth state changed', this.state)
+      console.log('auth state changed', user)
     })
   }
 
@@ -59,7 +42,7 @@ export class FirebaseAuthService extends Store<FirebaseAuthState> {
     try {
       const result = await signInWithPopup(this.auth, this.provider)
       const credential = GoogleAuthProvider.credentialFromResult(result)
-      this.setState({ token: credential?.accessToken })
+      this.authStore.setAuthState({ token: credential?.accessToken })
       //eslint-disable-next-line
     } catch (error: any) {
       const errorCode = error.code

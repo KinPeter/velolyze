@@ -10,13 +10,13 @@ export interface FirebaseConfig {
   measurementId: string
 }
 
-export enum FirestoreCollection {
-  COMMON = 'common',
-  ACTIVITIES = 'ACTIVITIES',
-}
-
 export interface FirestoreWhereClause {
   field: string
   operator: WhereFilterOp
   value: string
+}
+
+export interface BaseFirestoreData {
+  //eslint-disable-next-line
+  [key: string]: any
 }

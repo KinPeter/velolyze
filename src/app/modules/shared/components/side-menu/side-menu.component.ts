@@ -1,10 +1,11 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core'
-import { FirebaseAuthService } from '../../../firebase/firebase-auth.service'
+import { FirebaseAuthService } from '../../../../firebase/firebase-auth.service'
 import { Router } from '@angular/router'
 import { filter } from 'rxjs'
 import { MenuItem } from 'primeng/api'
-import { environment } from '../../../../environments/environment'
-import { StravaAuthService } from '../../strava/strava-auth.service'
+import { environment } from '../../../../../environments/environment'
+import { StravaAuthService } from '../../../strava/strava-auth.service'
+import { AuthStore } from '../../services/auth.store'
 
 @Component({
   selector: 'velo-side-menu',
@@ -150,18 +151,17 @@ export class SideMenuComponent {
 
   constructor(
     private firebaseAuthService: FirebaseAuthService,
+    private authStore: AuthStore,
     private stravaAuthService: StravaAuthService,
     private router: Router
   ) {
-    this.firebaseAuthService.user$.subscribe(user => {
+    this.authStore.user$.subscribe(user => {
       this.isLoggedIn = !!user
       this.setAvatarImage(user?.photoURL)
     })
-    this.firebaseAuthService.isLoggedIn$
-      .pipe(filter(value => value !== undefined))
-      .subscribe(isLoggedIn => {
-        this.items = isLoggedIn ? this.authenticatedMenuItems : this.loginMenuItems
-      })
+    this.authStore.isLoggedIn$.pipe(filter(value => value !== undefined)).subscribe(isLoggedIn => {
+      this.items = isLoggedIn ? this.authenticatedMenuItems : this.loginMenuItems
+    })
   }
 
   public toggleMenu(): void {

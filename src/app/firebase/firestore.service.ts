@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core'
 import { FirebaseAppService } from './firebase-app.service'
 import {
+  addDoc,
   collection,
-  query,
-  where,
+  doc,
   Firestore,
-  getFirestore,
   getDocs,
+  getFirestore,
+  query,
   QueryConstraint,
+  updateDoc,
+  where,
 } from 'firebase/firestore'
-import { FirestoreWhereClause } from './firebase.types'
+import { BaseFirestoreData, FirestoreWhereClause } from './firebase.types'
 import { NotificationService } from '../modules/shared/services/notification.service'
-import { FirebaseAuthService } from './firebase-auth.service'
+import { AuthStore } from '../modules/shared/services/auth.store'
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreService {
@@ -20,11 +23,11 @@ export class FirestoreService {
 
   constructor(
     private firebaseAppService: FirebaseAppService,
-    private firebaseAuthService: FirebaseAuthService,
+    private authStore: AuthStore,
     private notificationService: NotificationService
   ) {
     this.db = getFirestore(this.firebaseAppService.app)
-    this.firebaseAuthService.isLoggedIn$.subscribe(value => {
+    this.authStore.isLoggedIn$.subscribe(value => {
       this.isLoggedIn = !!value
     })
   }
@@ -43,8 +46,8 @@ export class FirestoreService {
       const querySnapshot = await getDocs(q)
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as T))
     } catch (e) {
-      console.log('Fetch failed from firestore', e)
-      this.notificationService.showError('Fetch failed from firestore')
+      console.log('Fetch failed from Firestore', e)
+      this.notificationService.showError('Fetch failed from Firestore')
       return [] as T[]
     }
   }
@@ -61,5 +64,34 @@ export class FirestoreService {
       throw new Error(message)
     }
     return resultsArray[0]
+  }
+
+  public async createOne<T extends BaseFirestoreData>(
+    collectionName: string,
+    data: T
+  ): Promise<string | undefined> {
+    try {
+      const docRef = await addDoc(collection(this.db, collectionName), data)
+      console.log('Document written: ', docRef)
+      return docRef.id
+    } catch (e) {
+      this.notificationService.showError('Failed to create document in Firestore')
+      return undefined
+    }
+  }
+
+  public async updateById<T extends BaseFirestoreData>(
+    collectionName: string,
+    docId: string,
+    data: Partial<T>
+  ): Promise<string | undefined> {
+    try {
+      const documentRef = doc(this.db, collectionName, docId)
+      await updateDoc(documentRef, data as T)
+      return docId
+    } catch (e) {
+      this.notificationService.showError('Failed to update document in Firestore')
+      return undefined
+    }
   }
 }

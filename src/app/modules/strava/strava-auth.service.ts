@@ -7,9 +7,10 @@ import { StorageKeys } from '../../constants/storage-keys'
 import { StravaSettingsStore } from './strava-settings.store'
 import { StravaAuthResponse, StravaSettings } from './strava.types'
 import { FirestoreService } from '../../firebase/firestore.service'
-import { FirestoreCollection } from '../../firebase/firebase.types'
 import { NotificationService } from '../shared/services/notification.service'
-import { FirebaseAuthService } from '../../firebase/firebase-auth.service'
+import { FirestoreCollection } from '../../constants/firestore-collections'
+import { AuthStore } from '../shared/services/auth.store'
+import { UserMetaService } from '../shared/services/user-meta.service'
 
 interface StravaAuthState {
   loading: boolean
@@ -41,12 +42,13 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
   constructor(
     private http: HttpClient,
     private firestoreService: FirestoreService,
-    private firebaseAuthService: FirebaseAuthService,
+    private authStore: AuthStore,
     private notificationService: NotificationService,
-    private settingsStore: StravaSettingsStore
+    private settingsStore: StravaSettingsStore,
+    private userMetaService: UserMetaService
   ) {
     super(StorageKeys.STRAVA_AUTH, initialState)
-    this.firebaseAuthService.isLoggedIn$.pipe(filter(value => value === true)).subscribe(() => {
+    this.authStore.isLoggedIn$.pipe(filter(value => value === true)).subscribe(() => {
       this.fetchSettings()
     })
     this.settingsStore.stravaSettings.subscribe(settings => {
@@ -100,6 +102,15 @@ export class StravaAuthService extends LocalStore<StravaAuthState> {
         tap({
           next: res => {
             console.log('strava auth', res)
+            this.userMetaService
+              .updateStravaDataInUserMeta(
+                this.authStore.currentUser?.uid ?? '',
+                res?.athlete.id,
+                res?.athlete.firstname,
+                res?.athlete.lastname,
+                res?.athlete.profile
+              )
+              .then()
             this.setState({
               accessToken: res.access_token,
               refreshToken: res.refresh_token,
