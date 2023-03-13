@@ -51,6 +51,7 @@ export interface StravaAthleteStatsResponse {
 export type SportType = 'Ride' | 'MountainBikeRide' | 'VirtualRide' | 'EBikeRide' | 'GravelRide'
 
 export interface StravaActivityResponse {
+  upload_id: number
   distance: number // meters
   sport_type: SportType
   moving_time: number // seconds
