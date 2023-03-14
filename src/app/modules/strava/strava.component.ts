@@ -3,10 +3,9 @@ import { StravaAuthService } from './strava-auth.service'
 import { filter, Subject, takeUntil, combineLatest, take } from 'rxjs'
 import { ActivatedRoute, Router } from '@angular/router'
 import { StravaApiService } from './strava-api.service'
-import { addDays, isSameDay, startOfYear } from 'date-fns'
 import { UserMetaService } from '../shared/services/user-meta.service'
 import { map } from 'rxjs/operators'
-import { StravaAthlete, StravaBikeData } from './strava.types'
+import { StravaActivity, StravaAthlete, StravaBikeData } from './strava.types'
 
 @Component({
   selector: 'velo-strava',
@@ -27,47 +26,13 @@ import { StravaAthlete, StravaBikeData } from './strava.types'
         <a pButton [href]="stravaOauthUrl">Log in to Strava</a>
       </div>
       <ng-template #stravaContainer>
-        <div *ngIf="athlete" class="athlete">
-          <div class="profile-pic">
-            <div
-              *ngIf="athlete.profile"
-              [ngStyle]="{ backgroundImage: 'url(' + athlete.profile + ')' }"
-              class="picture"
-            ></div>
-            <div *ngIf="!athlete.profile" class="pic-placeholder">
-              {{ athlete.firstname.charAt(0) }}{{ athlete.lastname.charAt(0) }}
-            </div>
-          </div>
-          <div class="name">
-            <h2>{{ athlete.firstname }} {{ athlete.lastname }}</h2>
-            <h3 *ngIf="athlete.city && athlete.country">
-              {{ athlete.city }}, {{ athlete.country }}
-            </h3>
-            <h3 *ngIf="!athlete.city && athlete.country">{{ athlete.country }}</h3>
-            <h3 *ngIf="athlete.city && !athlete.country">{{ athlete.city }}</h3>
-          </div>
-        </div>
-        <div *ngIf="athlete && bikes" class="bikes">
-          <h2>Bikes</h2>
-          <div class="bike-cards">
-            <p-card *ngFor="let bike of bikes" class="bike-card">
-              <h4>{{ bike.name }} <p-tag *ngIf="bike.primary" value="Primary"></p-tag></h4>
-              <p>Distance: {{ bike.converted_distance }}km</p>
-            </p-card>
-          </div>
-        </div>
-        <div class="activities">
-          <h2>Sync activities</h2>
-          <label for="range">Range</label>
-          <p-calendar
-            [(ngModel)]="rangeDates"
-            selectionMode="range"
-            [readonlyInput]="true"
-            [showIcon]="true"
-            inputId="range"
-          ></p-calendar>
-          <button (click)="fetchActivities()">fetch</button>
-        </div>
+        <velo-strava-athlete *ngIf="athlete" [athlete]="athlete"></velo-strava-athlete>
+        <velo-strava-bikes *ngIf="athlete && bikes" [bikes]="bikes"></velo-strava-bikes>
+        <velo-strava-activities
+          [activities]="activities"
+          (fetch)="fetchActivities($event)"
+          (sync)="syncActivities($event)"
+        ></velo-strava-activities>
       </ng-template>
     </ng-container>
   `,
@@ -76,45 +41,6 @@ import { StravaAthlete, StravaBikeData } from './strava.types'
       i.warning-icon {
         font-size: 1.3rem;
         margin-right: 1rem;
-      }
-
-      .athlete {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        .picture,
-        .pic-placeholder {
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          background-size: contain;
-        }
-
-        .pic-placeholder {
-          background: #fd4c02;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2.5rem;
-        }
-      }
-
-      .bike-cards {
-        display: flex;
-        gap: 1rem;
-
-        p-card {
-          padding: 0;
-          width: 250px;
-          height: 100px;
-
-          h4,
-          p {
-            margin: 0;
-          }
-        }
       }
     `,
   ],
@@ -127,9 +53,9 @@ export class StravaComponent implements OnDestroy {
   public disabled$ = this.stravaAuthService.disabled$
   public needAuth$ = this.stravaAuthService.needAuth$
   public stravaOauthUrl = this.stravaAuthService.stravaOauthUrl
-  public rangeDates: Date[] = [startOfYear(new Date()), new Date()]
   public athlete: StravaAthlete | null = null
   public bikes: StravaBikeData[] = []
+  public activities: StravaActivity[] = []
 
   private unsubscribe$ = new Subject<boolean>()
 
@@ -146,13 +72,6 @@ export class StravaComponent implements OnDestroy {
         this.router.navigate(['.'], { relativeTo: this.route, queryParams: {} }).then()
       }
     })
-    this.userMetaService.userMeta$
-      .pipe(filter(Boolean), takeUntil(this.unsubscribe$))
-      .subscribe(({ lastSyncDate }) => {
-        if (lastSyncDate && !isSameDay(new Date(lastSyncDate), new Date())) {
-          this.rangeDates = [addDays(new Date(lastSyncDate), 1), new Date()]
-        }
-      })
     this.fetchAthleteData()
   }
 
@@ -180,10 +99,14 @@ export class StravaComponent implements OnDestroy {
       })
   }
 
-  public async fetchActivities(): Promise<void> {
-    const [start, end] = this.rangeDates
+  public async fetchActivities(dates: Date[]): Promise<void> {
+    const [start, end] = dates
     if (!start || !end) return
-    const activities = await this.stravaApiService.fetchActivities(start, end)
+    this.activities = await this.stravaApiService.fetchActivities(start, end)
+    console.log(this.activities)
+  }
+
+  public async syncActivities(activities: StravaActivity[]): Promise<void> {
     console.log(activities)
     // await this.userMetaService.updateSyncDataInUserMeta(
     //   end,

@@ -10,6 +10,7 @@ import { MessagesModule } from 'primeng/messages'
 import { CalendarModule } from 'primeng/calendar'
 import { CardModule } from 'primeng/card'
 import { TagModule } from 'primeng/tag'
+import { TableModule } from 'primeng/table'
 
 @NgModule({
   declarations: [],
@@ -23,6 +24,7 @@ import { TagModule } from 'primeng/tag'
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    TableModule,
     TagModule,
   ],
   exports: [
@@ -34,6 +36,7 @@ import { TagModule } from 'primeng/tag'
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    TableModule,
     TagModule,
   ],
   providers: [MessageService],
