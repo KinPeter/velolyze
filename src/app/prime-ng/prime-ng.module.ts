@@ -8,6 +8,8 @@ import { MessageService } from 'primeng/api'
 import { ProgressSpinnerModule } from 'primeng/progressspinner'
 import { MessagesModule } from 'primeng/messages'
 import { CalendarModule } from 'primeng/calendar'
+import { CardModule } from 'primeng/card'
+import { TagModule } from 'primeng/tag'
 
 @NgModule({
   declarations: [],
@@ -15,20 +17,24 @@ import { CalendarModule } from 'primeng/calendar'
     CommonModule,
     ButtonModule,
     CalendarModule,
+    CardModule,
     MenuModule,
     ToastModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    TagModule,
   ],
   exports: [
     ButtonModule,
     CalendarModule,
+    CardModule,
     MenuModule,
     ToastModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    TagModule,
   ],
   providers: [MessageService],
 })

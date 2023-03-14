@@ -1,3 +1,5 @@
+import { StravaBikeData } from '../../strava/strava.types'
+
 export interface UserMeta {
   id: string
   userId: string
@@ -7,4 +9,5 @@ export interface UserMeta {
   stravaProfilePicUrl: string | null
   lastSyncDate: number | null
   uploadedActivities: number[]
+  bikes: StravaBikeData[]
 }

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { StravaActivityResponse } from './strava.types'
+import { rideSportTypes, StravaActivity, StravaAthlete } from './strava.types'
 import { Store } from '../../utils/store'
 import { NotificationService } from '../shared/services/notification.service'
 import { firstValueFrom } from 'rxjs'
@@ -33,19 +33,17 @@ export class StravaApiService extends Store<StravaApiState> {
 
   public loading$ = this.select(state => state.loading)
 
-  public async fetchActivities(startDate: Date, endDate: Date): Promise<StravaActivityResponse[]> {
+  public async fetchActivities(startDate: Date, endDate: Date): Promise<StravaActivity[]> {
     this.setState({ loading: true })
     const start = Math.floor(startOfDay(startDate).getTime() / 1000)
     const end = Math.floor(endOfDay(endDate).getTime() / 1000)
-    let activities: StravaActivityResponse[] = []
+    let activities: StravaActivity[] = []
     let page = 1
     let done = false
     try {
       while (!done) {
         const url = `${this.stravaApiBaseUrl}/athlete/activities?per_page=100&page=${page}&after=${start}&before=${end}`
-        const response = await firstValueFrom(
-          this.http.get<StravaActivityResponse[]>(url, this.apiOptions)
-        )
+        const response = await firstValueFrom(this.http.get<StravaActivity[]>(url, this.apiOptions))
         if (!response) {
           throw new Error()
         } else if (response?.length < 100) {
@@ -55,11 +53,25 @@ export class StravaApiService extends Store<StravaApiState> {
         }
         activities = [...activities, ...response]
       }
-      this.setState({ loading: false })
-      return activities
+      return activities.filter(({ sport_type }) => rideSportTypes.includes(sport_type))
     } catch (e) {
       this.notificationService.showError('Could not fetch activities')
       return []
+    } finally {
+      this.setState({ loading: false })
+    }
+  }
+
+  public async fetchAthleteData(): Promise<StravaAthlete> {
+    this.setState({ loading: true })
+    try {
+      const url = `${this.stravaApiBaseUrl}/athlete`
+      return await firstValueFrom(this.http.get<StravaAthlete>(url, this.apiOptions))
+    } catch (e) {
+      this.notificationService.showError('Could not fetch athlete data')
+      return {} as StravaAthlete
+    } finally {
+      this.setState({ loading: false })
     }
   }
 
