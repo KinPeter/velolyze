@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { StravaAthlete } from '../strava.types'
+import { StravaAthlete } from '../../strava/strava.types'
 
 @Component({
   selector: 'velo-strava-athlete',
@@ -12,7 +12,7 @@ import { StravaAthlete } from '../strava.types'
           class="picture"
         ></div>
         <div *ngIf="!athlete.profile" class="pic-placeholder">
-          {{ athlete.firstname.charAt(0) }}{{ athlete.lastname.charAt(0) }}
+          {{ athlete.firstname?.charAt(0) }}{{ athlete.lastname?.charAt(0) }}
         </div>
       </div>
       <div class="name">
@@ -51,5 +51,5 @@ import { StravaAthlete } from '../strava.types'
   ],
 })
 export class StravaAthleteComponent {
-  @Input() athlete!: StravaAthlete
+  @Input() athlete!: Partial<StravaAthlete>
 }

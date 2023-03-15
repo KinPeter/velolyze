@@ -1,11 +1,11 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core'
-import { FirebaseAuthService } from '../../../../firebase/firebase-auth.service'
+import { FirebaseAuthService } from '../../../firebase/firebase-auth.service'
 import { Router } from '@angular/router'
 import { filter } from 'rxjs'
 import { MenuItem } from 'primeng/api'
-import { environment } from '../../../../../environments/environment'
-import { StravaAuthService } from '../../../strava/strava-auth.service'
-import { AuthStore } from '../../services/auth.store'
+import { environment } from '../../../../environments/environment'
+import { StravaAuthService } from '../../strava/strava-auth.service'
+import { AuthStore } from '../services/auth.store'
 
 @Component({
   selector: 'velo-side-menu',

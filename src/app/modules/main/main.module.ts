@@ -5,10 +5,11 @@ import { MeComponent } from './me/me.component'
 import { MainRoutingModule } from './main-routing.module'
 import { ActivitiesComponent } from './activities/activities.component'
 import { RoutesComponent } from './routes/routes.component'
-import { ButtonModule } from 'primeng/button'
+import { SharedModule } from '../shared/shared.module'
+import { NoDataComponent } from './common/no-data.component'
 
 @NgModule({
-  declarations: [MainComponent, MeComponent, ActivitiesComponent, RoutesComponent],
-  imports: [CommonModule, MainRoutingModule, ButtonModule],
+  declarations: [MainComponent, MeComponent, NoDataComponent, ActivitiesComponent, RoutesComponent],
+  imports: [CommonModule, MainRoutingModule, SharedModule],
 })
 export class MainModule {}

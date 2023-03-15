@@ -6,6 +6,8 @@ export interface UserMeta {
   athleteId: number | null
   firstName: string
   lastName: string
+  city: string
+  country: string
   stravaProfilePicUrl: string | null
   lastSyncDate: number | null
   uploadedActivities: number[]

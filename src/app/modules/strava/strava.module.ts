@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common'
 import { StravaComponent } from './strava.component'
 import { RouterModule } from '@angular/router'
 import { SharedModule } from '../shared/shared.module'
-import { StravaAthleteComponent } from './components/strava-athlete.component'
 import { StravaBikesComponent } from './components/strava-bikes.component'
 import { StravaActivitiesComponent } from './components/strava-activities.component'
 
@@ -14,12 +13,7 @@ import { StravaActivitiesComponent } from './components/strava-activities.compon
 class StravaRoutingModule {}
 
 @NgModule({
-  declarations: [
-    StravaComponent,
-    StravaAthleteComponent,
-    StravaBikesComponent,
-    StravaActivitiesComponent,
-  ],
+  declarations: [StravaComponent, StravaBikesComponent, StravaActivitiesComponent],
   imports: [CommonModule, SharedModule, StravaRoutingModule],
 })
 export class StravaModule {}

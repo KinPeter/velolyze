@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { UserMetaService } from '../shared/services/user-meta.service'
-import { StravaActivity, StravaBikeData } from './strava.types'
+import { StravaActivity, StravaAthlete, StravaBikeData } from './strava.types'
 import { Store } from '../../utils/store'
 import { FirestoreService } from '../../firebase/firestore.service'
 import { AuthStore } from '../shared/services/auth.store'
@@ -21,6 +21,7 @@ export class StravaSyncService extends Store<{ loading: boolean }> {
   }
 
   public async syncActivities(
+    athlete: StravaAthlete,
     bikes: StravaBikeData[],
     activities: StravaActivity[]
   ): Promise<number> {
@@ -34,7 +35,7 @@ export class StravaSyncService extends Store<{ loading: boolean }> {
     }))
     const synced = await this.firestoreService.createMany(FirestoreCollection.ACTIVITIES, payload)
     if (synced > 0) {
-      await this.userMetaService.updateSyncDataInUserMeta(bikes, activityIds)
+      await this.userMetaService.updateSyncDataInUserMeta(athlete, bikes, activityIds)
       this.setState({ loading: false })
       return synced
     } else {

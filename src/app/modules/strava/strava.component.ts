@@ -23,9 +23,10 @@ import { StravaSyncService } from './strava-sync.service'
       <p-progressSpinner class="velo-spinner"></p-progressSpinner>
     </ng-container>
     <ng-container *ngIf="(loading$ | async) === false && (disabled$ | async) === false">
-      <div *ngIf="needAuth$ | async; else stravaContainer">
+      <section *ngIf="needAuth$ | async; else stravaContainer" class="need-auth">
+        <p>In order to sync with Strava, you have to authorize Velolyze to access your data.</p>
         <a pButton [href]="stravaOauthUrl">Log in to Strava</a>
-      </div>
+      </section>
       <ng-template #stravaContainer>
         <velo-strava-athlete *ngIf="athlete" [athlete]="athlete"></velo-strava-athlete>
         <velo-strava-bikes *ngIf="athlete && bikes" [bikes]="bikes"></velo-strava-bikes>
@@ -41,6 +42,20 @@ import { StravaSyncService } from './strava-sync.service'
   `,
   styles: [
     `
+      section.need-auth {
+        width: 100%;
+        padding-top: 25vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        p {
+          color: var(--text-color-secondary);
+          margin-bottom: 3rem;
+        }
+      }
+
       i.warning-icon {
         font-size: 1.3rem;
         margin-right: 1rem;
@@ -122,7 +137,12 @@ export class StravaComponent implements OnDestroy {
   }
 
   public async syncActivities(activities: StravaActivity[]): Promise<void> {
-    const successfullySynced = await this.stravaSyncService.syncActivities(this.bikes, activities)
+    if (!this.athlete) return
+    const successfullySynced = await this.stravaSyncService.syncActivities(
+      this.athlete,
+      this.bikes,
+      activities
+    )
     this.successfullySynced = successfullySynced
     if (successfullySynced > 0) {
       this.activities = []
