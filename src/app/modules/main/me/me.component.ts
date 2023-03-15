@@ -5,8 +5,8 @@ import { combineLatest, filter, Subject, takeUntil } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { StravaAthlete } from '../../strava/strava.types'
 import { Activity } from '../../shared/types/activities'
-import { getCalendarHeatmapData } from '../../../utils/me-data.utils'
-import { CalendarHeatmapData } from './me.types'
+import { getCalendarHeatmapData, getTotalsForPeriods } from '../../../utils/me-data.utils'
+import { CalendarHeatmapData, TotalsPerPeriod } from './me.types'
 
 @Component({
   selector: 'velo-me',
@@ -23,9 +23,24 @@ import { CalendarHeatmapData } from './me.types'
         *ngIf="!athlete?.firstname || !athlete?.lastname || !activities.length"
       ></velo-no-data>
       <velo-calendar-heatmap [days]="calendarHeatmapDays"></velo-calendar-heatmap>
+      <section class="totals">
+        <velo-totals-card [totals]="totals.thisWeek" title="This week"></velo-totals-card>
+        <velo-totals-card [totals]="totals.thisMonth" title="This month"></velo-totals-card>
+        <velo-totals-card [totals]="totals.thisYear" title="This year"></velo-totals-card>
+        <velo-totals-card [totals]="totals.allTimes" title="All times"></velo-totals-card>
+      </section>
     </ng-template>
   `,
-  styles: [],
+  styles: [
+    `
+      section.totals {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        grid-gap: 1rem;
+      }
+    `,
+  ],
 })
 export class MeComponent implements OnDestroy {
   public loading$ = combineLatest([
@@ -36,6 +51,7 @@ export class MeComponent implements OnDestroy {
   public athlete: Partial<StravaAthlete> | undefined
   public activities: Activity[] = []
   public calendarHeatmapDays: CalendarHeatmapData[] = []
+  public totals!: TotalsPerPeriod
 
   private unsubscribe$ = new Subject<boolean>()
 
@@ -48,6 +64,7 @@ export class MeComponent implements OnDestroy {
       // console.log(getActivitiesPerDay(activities))
       // console.log(getCalendarHeatmapData(activities))
       this.calendarHeatmapDays = getCalendarHeatmapData(activities)
+      this.totals = getTotalsForPeriods(activities)
     })
     this.userMetaService.userMeta$
       .pipe(filter(Boolean), takeUntil(this.unsubscribe$))

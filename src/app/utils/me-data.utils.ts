@@ -1,8 +1,16 @@
 import { Activity } from '../modules/shared/types/activities'
-import { CalendarHeatmapData } from '../modules/main/me/me.types'
-import { addDays, isSameDay, startOfDay, subDays } from 'date-fns'
-import { StravaActivity } from '../modules/strava/strava.types'
-import { formatDate, metersToKms } from './utils'
+import { CalendarHeatmapData, Totals, TotalsPerPeriod } from '../modules/main/me/me.types'
+import {
+  addDays,
+  isSameDay,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  subDays,
+} from 'date-fns'
+import { SportType, StravaActivity } from '../modules/strava/strava.types'
+import { formatDate, metersToKms, roundToOneDecimal, secondsToHours } from './utils'
 
 export function getCalendarHeatmapData(activities: Activity[]): CalendarHeatmapData[] {
   const dates = []
@@ -62,4 +70,77 @@ export function getActivitiesPerDay(activities: Activity[]): Record<number, Stra
   })
 
   return result
+}
+
+export function getTotals(activities: StravaActivity[]): Totals {
+  let distance = 0
+  let elevationGain = 0
+  let movingTime = 0
+  let achievementCount = 0
+  let prCount = 0
+  const ridesByType = {} as Record<SportType, number>
+  let longestRide = activities[0]?.distance ?? 0
+  let biggestClimb = activities[0]?.total_elevation_gain ?? 0
+
+  activities.forEach(item => {
+    distance += item.distance
+    elevationGain += item.total_elevation_gain
+    movingTime += item.moving_time
+    achievementCount += item.achievement_count
+    prCount += item.pr_count
+    if (item.trainer) {
+      if (ridesByType['VirtualRide']) {
+        ridesByType['VirtualRide']++
+      } else {
+        ridesByType['VirtualRide'] = 1
+      }
+    } else {
+      if (ridesByType[item.sport_type]) {
+        ridesByType[item.sport_type]++
+      } else {
+        ridesByType[item.sport_type] = 1
+      }
+    }
+    if (item.distance > longestRide) {
+      longestRide = item.distance
+    }
+    if (item.total_elevation_gain > biggestClimb) {
+      biggestClimb = item.total_elevation_gain
+    }
+  })
+
+  return {
+    rides: activities.length,
+    distance: metersToKms(distance),
+    elevationGain: roundToOneDecimal(elevationGain),
+    movingTime: secondsToHours(movingTime),
+    achievementCount,
+    prCount,
+    ridesByType,
+    longestRide: metersToKms(longestRide),
+    biggestClimb: roundToOneDecimal(biggestClimb),
+  }
+}
+
+export function getTotalsForPeriods(activities: Activity[]): TotalsPerPeriod {
+  const now = new Date()
+  const startOfWeekTime = startOfWeek(now).getTime()
+  const startOfMonthTime = startOfMonth(now).getTime()
+  const startOfYearTime = startOfYear(now).getTime()
+  const weekActivities: StravaActivity[] = []
+  const monthActivities: StravaActivity[] = []
+  const yearActivities: StravaActivity[] = []
+
+  activities.forEach(({ date, activity }) => {
+    if (date >= startOfYearTime) yearActivities.push(activity)
+    if (date >= startOfMonthTime) monthActivities.push(activity)
+    if (date >= startOfWeekTime) weekActivities.push(activity)
+  })
+
+  return {
+    thisWeek: getTotals(weekActivities),
+    thisMonth: getTotals(monthActivities),
+    thisYear: getTotals(yearActivities),
+    allTimes: getTotals(activities.map(({ activity }) => activity)),
+  }
 }
