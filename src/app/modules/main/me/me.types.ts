@@ -5,5 +5,7 @@ export interface CalendarHeatmapData {
   dayOfWeek: number
   dayOfMonth: number
   month: string
+  class: string
+  tooltip: string
   empty?: boolean
 }

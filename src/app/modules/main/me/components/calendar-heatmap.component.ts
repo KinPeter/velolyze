@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core'
 import { CalendarHeatmapData } from '../me.types'
-import { formatDate } from '../../../../utils/utils'
 import { subDays } from 'date-fns'
 
 @Component({
@@ -19,8 +18,8 @@ import { subDays } from 'date-fns'
         <ng-container *ngFor="let day of calendarDays">
           <div
             class="day"
-            [ngClass]="getClass(day)"
-            [pTooltip]="getTooltip(day)"
+            [ngClass]="day.class"
+            [pTooltip]="day.tooltip"
             tooltipStyleClass="calendar-heatmap-day-tooltip"
           ></div>
         </ng-container>
@@ -94,9 +93,11 @@ export class CalendarHeatmapComponent {
           dayOfWeek: i,
           dayOfMonth: 0,
           month: '',
-          date: subDays(days[0].date, i),
+          date: subDays(days[0].date, firstDay - i),
           rides: 0,
           distance: 0,
+          class: 'empty',
+          tooltip: '',
         })
       }
     }
@@ -115,28 +116,4 @@ export class CalendarHeatmapComponent {
   public monthLabels: { week: number; month: string }[] = []
 
   constructor() {}
-
-  public getClass(day: CalendarHeatmapData): string {
-    if (day.empty) {
-      return 'empty'
-    } else if (day.distance === 0) {
-      return ''
-    } else if (day.distance < 20) {
-      return 'low'
-    } else if (day.distance < 40) {
-      return 'medium'
-    } else if (day.distance < 60) {
-      return 'high'
-    } else {
-      return 'extreme'
-    }
-  }
-
-  public getTooltip(day: CalendarHeatmapData): string {
-    if (day.empty) return ''
-    if (day.rides === 0) return `${formatDate(day.date)}\nNo rides`
-    return `${formatDate(day.date)}\n${day.rides} ride${day.rides > 1 ? 's' : ''}, ${
-      day.distance
-    } km`
-  }
 }
