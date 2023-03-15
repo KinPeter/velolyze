@@ -11,6 +11,7 @@ import { CalendarModule } from 'primeng/calendar'
 import { CardModule } from 'primeng/card'
 import { TagModule } from 'primeng/tag'
 import { TableModule } from 'primeng/table'
+import { TooltipModule } from 'primeng/tooltip'
 
 @NgModule({
   declarations: [],
@@ -26,6 +27,7 @@ import { TableModule } from 'primeng/table'
     ProgressSpinnerModule,
     TableModule,
     TagModule,
+    TooltipModule,
   ],
   exports: [
     ButtonModule,
@@ -38,6 +40,7 @@ import { TableModule } from 'primeng/table'
     ProgressSpinnerModule,
     TableModule,
     TagModule,
+    TooltipModule,
   ],
   providers: [MessageService],
 })

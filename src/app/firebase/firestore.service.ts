@@ -11,8 +11,9 @@ import {
   QueryConstraint,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore'
-import { BaseFirestoreData, FirestoreWhereClause } from './firebase.types'
+import { BaseFirestoreData, FirestoreDataWithId, FirestoreWhereClause } from './firebase.types'
 import { NotificationService } from '../modules/shared/services/notification.service'
 import { AuthStore } from '../modules/shared/services/auth.store'
 
@@ -77,6 +78,24 @@ export class FirestoreService {
     } catch (e) {
       this.notificationService.showError('Failed to create document in Firestore')
       return undefined
+    }
+  }
+
+  public async createMany<T extends FirestoreDataWithId>(
+    collectionName: string,
+    data: T[]
+  ): Promise<number> {
+    try {
+      const batch = writeBatch(this.db)
+      for (const item of data) {
+        const ref = doc(this.db, collectionName, item.id)
+        batch.set(ref, item)
+      }
+      await batch.commit()
+      return data.length
+    } catch (e) {
+      this.notificationService.showError('Failed to create documents in Firestore')
+      return 0
     }
   }
 

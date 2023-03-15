@@ -6,6 +6,7 @@ import { StravaApiService } from './strava-api.service'
 import { UserMetaService } from '../shared/services/user-meta.service'
 import { map } from 'rxjs/operators'
 import { StravaActivity, StravaAthlete, StravaBikeData } from './strava.types'
+import { StravaSyncService } from './strava-sync.service'
 
 @Component({
   selector: 'velo-strava',
@@ -30,6 +31,8 @@ import { StravaActivity, StravaAthlete, StravaBikeData } from './strava.types'
         <velo-strava-bikes *ngIf="athlete && bikes" [bikes]="bikes"></velo-strava-bikes>
         <velo-strava-activities
           [activities]="activities"
+          [successfullySynced]="successfullySynced"
+          [fetchNoResult]="fetchButNoResult"
           (fetch)="fetchActivities($event)"
           (sync)="syncActivities($event)"
         ></velo-strava-activities>
@@ -49,19 +52,24 @@ export class StravaComponent implements OnDestroy {
   public loading$ = combineLatest([
     this.stravaAuthService.loading$,
     this.stravaApiService.loading$,
-  ]).pipe(map(([a, b]) => a || b))
+    this.stravaSyncService.loading$,
+  ]).pipe(map(([a, b, c]) => a || b || c))
   public disabled$ = this.stravaAuthService.disabled$
   public needAuth$ = this.stravaAuthService.needAuth$
   public stravaOauthUrl = this.stravaAuthService.stravaOauthUrl
   public athlete: StravaAthlete | null = null
   public bikes: StravaBikeData[] = []
+  public uploadedActivityIds: number[] = []
   public activities: StravaActivity[] = []
+  public successfullySynced = 0
+  public fetchButNoResult = false
 
   private unsubscribe$ = new Subject<boolean>()
 
   constructor(
     private stravaAuthService: StravaAuthService,
     private stravaApiService: StravaApiService,
+    private stravaSyncService: StravaSyncService,
     private route: ActivatedRoute,
     private router: Router,
     private userMetaService: UserMetaService
@@ -72,6 +80,11 @@ export class StravaComponent implements OnDestroy {
         this.router.navigate(['.'], { relativeTo: this.route, queryParams: {} }).then()
       }
     })
+    this.userMetaService.userMeta$
+      .pipe(filter(Boolean), takeUntil(this.unsubscribe$))
+      .subscribe(({ uploadedActivities }) => {
+        this.uploadedActivityIds = [...uploadedActivities]
+      })
     this.fetchAthleteData()
   }
 
@@ -89,7 +102,6 @@ export class StravaComponent implements OnDestroy {
       )
       .subscribe(async () => {
         this.athlete = await this.stravaApiService.fetchAthleteData()
-        console.log(this.athlete)
         const { bikes } = this.athlete
         const primaryIndex = bikes.findIndex(({ primary }) => primary)
         const primaryBike = bikes[primaryIndex]
@@ -100,17 +112,20 @@ export class StravaComponent implements OnDestroy {
   }
 
   public async fetchActivities(dates: Date[]): Promise<void> {
+    this.successfullySynced = 0
+    this.fetchButNoResult = false
     const [start, end] = dates
     if (!start || !end) return
-    this.activities = await this.stravaApiService.fetchActivities(start, end)
-    console.log(this.activities)
+    const response = await this.stravaApiService.fetchActivities(start, end)
+    this.activities = response.filter(({ id }) => !this.uploadedActivityIds.includes(id))
+    this.fetchButNoResult = !this.activities.length
   }
 
   public async syncActivities(activities: StravaActivity[]): Promise<void> {
-    console.log(activities)
-    // await this.userMetaService.updateSyncDataInUserMeta(
-    //   end,
-    //   activities.map(({ upload_id }) => upload_id)
-    // )
+    const successfullySynced = await this.stravaSyncService.syncActivities(this.bikes, activities)
+    this.successfullySynced = successfullySynced
+    if (successfullySynced > 0) {
+      this.activities = []
+    }
   }
 }

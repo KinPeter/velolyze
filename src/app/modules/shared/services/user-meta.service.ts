@@ -78,15 +78,23 @@ export class UserMetaService extends Store<{ data: UserMeta | null }> {
         lastName,
         stravaProfilePicUrl,
       })
+      this.setState({
+        data: {
+          ...userData,
+          athleteId,
+          firstName,
+          lastName,
+          stravaProfilePicUrl,
+        },
+      })
     } catch (e) {
       this.notificationService.showError('Could not update user metadata')
     }
   }
 
   public async updateSyncDataInUserMeta(
-    lastSyncDate: Date,
-    syncedIds: number[],
-    bikes: StravaBikeData[]
+    bikes: StravaBikeData[],
+    syncedIds: number[]
   ): Promise<void> {
     try {
       const userData = await this.firestoreService.queryOne<UserMeta>(
@@ -98,10 +106,20 @@ export class UserMetaService extends Store<{ data: UserMeta | null }> {
         }
       )
       if (!userData) throw new Error()
+      const lastSyncDate = new Date().getTime()
+      const uploadedActivities = [...userData.uploadedActivities, ...syncedIds]
       await this.firestoreService.updateById<UserMeta>(FirestoreCollection.USER_META, userData.id, {
-        lastSyncDate: lastSyncDate.getTime(),
-        uploadedActivities: [...userData.uploadedActivities, ...syncedIds],
+        lastSyncDate,
+        uploadedActivities,
         bikes,
+      })
+      this.setState({
+        data: {
+          ...userData,
+          lastSyncDate,
+          bikes,
+          uploadedActivities,
+        },
       })
     } catch (e) {
       this.notificationService.showError('Could not update sync in user metadata')

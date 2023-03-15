@@ -4,6 +4,10 @@ html {
   font-family: var(--font-family);
   color: var(--text-color);
   background: var(--surface-ground);
+
+  --color-error: #fca5a5;
+  --color-warn: #fcd34d;
+  --color-success: #66eb96;
 }
 
 body {

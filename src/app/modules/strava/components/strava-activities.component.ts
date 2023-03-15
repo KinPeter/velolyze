@@ -3,6 +3,7 @@ import { StravaActivity } from '../strava.types'
 import { addDays, isSameDay, startOfYear } from 'date-fns'
 import { UserMetaService } from '../../shared/services/user-meta.service'
 import { filter, Subject, takeUntil } from 'rxjs'
+import { formatDate } from '../../../utils/utils'
 
 @Component({
   selector: 'velo-strava-activities',
@@ -20,6 +21,7 @@ import { filter, Subject, takeUntil } from 'rxjs'
             dateFormat="M d, yy"
             inputId="range"
           ></p-calendar>
+          <i class="pi pi-info-circle" [pTooltip]="lastSyncTooltip" tooltipPosition="top"></i>
           <button
             pButton
             pRipple
@@ -34,6 +36,18 @@ import { filter, Subject, takeUntil } from 'rxjs'
           <span>
             {{ selectedActivities.length }} / {{ activities.length }} activities selected
           </span>
+          <i
+            *ngIf="selectedActivities.length <= 200"
+            class="pi pi-info-circle"
+            [pTooltip]="limitationsTooltip"
+            tooltipPosition="top"
+          ></i>
+          <i
+            *ngIf="selectedActivities.length > 200"
+            class="pi pi-exclamation-triangle"
+            [pTooltip]="limitationsTooltip"
+            tooltipPosition="top"
+          ></i>
           <button
             pButton
             pRipple
@@ -45,7 +59,7 @@ import { filter, Subject, takeUntil } from 'rxjs'
           ></button>
         </div>
       </section>
-      <section *ngIf="activities.length" class="list">
+      <section *ngIf="activities.length && !successfullySynced" class="list">
         <p-table
           [value]="activities"
           [(selection)]="selectedActivities"
@@ -77,6 +91,22 @@ import { filter, Subject, takeUntil } from 'rxjs'
           </ng-template>
         </p-table>
       </section>
+      <section *ngIf="!activities.length && !successfullySynced && fetchNoResult" class="no-result">
+        <p>There are no results for this search.</p>
+        <p><em>Maybe you already synced everything?</em></p>
+      </section>
+      <section *ngIf="!activities.length && successfullySynced > 0" class="success">
+        <i class="pi pi-check-circle"></i>
+        <h2>Successfully synced {{ successfullySynced }} activities!</h2>
+        <button
+          pButton
+          pRipple
+          type="button"
+          label="Go to Activities"
+          class="p-button-outlined p-button-rounded p-button-success"
+          routerLink="/main/activities"
+        ></button>
+      </section>
     </div>
   `,
   styles: [
@@ -92,9 +122,23 @@ import { filter, Subject, takeUntil } from 'rxjs'
             margin-left: 1rem;
           }
 
+          i {
+            font-size: 1.25rem;
+            margin-left: 1rem;
+
+            &.pi-exclamation-triangle {
+              color: var(--color-warn);
+            }
+          }
+
           .fetch {
             label {
               margin-right: 1rem;
+            }
+
+            i {
+              position: relative;
+              top: 2px;
             }
           }
 
@@ -118,12 +162,34 @@ import { filter, Subject, takeUntil } from 'rxjs'
             }
           }
         }
+
+        section.no-result,
+        section.success {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 3rem 0;
+        }
+
+        section.success {
+          color: var(--color-success);
+
+          i {
+            font-size: 4rem;
+          }
+
+          h2 {
+            margin: 3rem 0;
+          }
+        }
       }
     `,
   ],
 })
 export class StravaActivitiesComponent implements OnDestroy {
   @Input() activities!: StravaActivity[]
+  @Input() successfullySynced!: number
+  @Input() fetchNoResult!: boolean
 
   @Output() fetch = new EventEmitter<Date[]>()
   @Output() sync = new EventEmitter<StravaActivity[]>()
@@ -131,17 +197,25 @@ export class StravaActivitiesComponent implements OnDestroy {
   public rangeDates: Date[] = [startOfYear(new Date()), new Date()]
   public selectedActivities: StravaActivity[] = []
 
+  public lastSyncTooltip =
+    "You haven't synced your data yet. You will see your last sync date here."
+  public limitationsTooltip =
+    'There are limitations for both the Strava API and for the Velolyze database. Please try not to sync more than 200 activities at a time.'
+
   private unsubscribe$ = new Subject<boolean>()
 
   constructor(private userMetaService: UserMetaService) {
     this.userMetaService.userMeta$
       .pipe(filter(Boolean), takeUntil(this.unsubscribe$))
       .subscribe(({ lastSyncDate }) => {
-        const isLastSyncToday = lastSyncDate && isSameDay(new Date(lastSyncDate), new Date())
-        if (lastSyncDate && !isLastSyncToday) {
-          this.rangeDates = [addDays(new Date(lastSyncDate), 1), new Date()]
-        } else if (lastSyncDate && isLastSyncToday) {
-          this.rangeDates = [new Date(), new Date()]
+        if (lastSyncDate) {
+          this.lastSyncTooltip = 'Last sync date: ' + formatDate(new Date(lastSyncDate))
+          const isLastSyncToday = isSameDay(new Date(lastSyncDate), new Date())
+          if (!isLastSyncToday) {
+            this.rangeDates = [addDays(new Date(lastSyncDate), 1), new Date()]
+          } else if (isLastSyncToday) {
+            this.rangeDates = [new Date(), new Date()]
+          }
         }
       })
   }
@@ -152,6 +226,7 @@ export class StravaActivitiesComponent implements OnDestroy {
 
   public onClickFetch(): void {
     this.fetch.emit(this.rangeDates)
+    this.selectedActivities = []
   }
 
   public onClickSync(): void {

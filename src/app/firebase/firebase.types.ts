@@ -20,3 +20,7 @@ export interface BaseFirestoreData {
   //eslint-disable-next-line
   [key: string]: any
 }
+
+export interface FirestoreDataWithId extends BaseFirestoreData {
+  id: string
+}
