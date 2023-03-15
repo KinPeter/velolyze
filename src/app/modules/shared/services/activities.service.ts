@@ -38,6 +38,8 @@ export class ActivitiesService extends Store<ActivitiesState> {
         value: userId,
       })
       console.log(response)
+      // const response = JSON.parse(localStorage.getItem('temp') as string)
+      // localStorage.setItem('temp', JSON.stringify(response))
       this.setState({ activities: response })
     } catch (e) {
       this.notificationService.showError('Could not fetch activities.')
