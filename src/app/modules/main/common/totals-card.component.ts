@@ -6,42 +6,89 @@ import { separateWords } from '../../../utils/utils'
 @Component({
   selector: 'velo-totals-card',
   template: `
-    <p-card [header]="title">
+    <div class="card">
+      <h1>{{ title }}</h1>
       <p>
-        <span>{{ data.rides }}</span> Rides
+        <span>{{ data.rides }}</span> Ride<ng-container *ngIf="data.rides !== 1">s</ng-container>
       </p>
-      <p *ngIf="hasRides && !hasOnlyRoadRides" class="p-text-secondary">
+      <p *ngIf="hasRides">
         {{ ridesByType }}
       </p>
-      <p *ngIf="hasRides && hasOnlyRoadRides" class="p-text-secondary">All Road Rides</p>
       <p>
-        <span>{{ data.distance }}</span> km
+        <span>{{ data.distance }}</span> <b>km</b> of distance <br />
+        <span>{{ data.elevationGain }}</span> <b>m</b> of elevation gain <br />
+        <span>{{ data.movingTime }}</span> <b>hrs</b> of moving
       </p>
-    </p-card>
+      <p *ngIf="data.achievementCount">
+        <span>{{ data.achievementCount }}</span> new achievements
+        <ng-container *ngIf="data.prCount">
+          <br />with <span>{{ data.prCount }}</span> personal records
+        </ng-container>
+      </p>
+      <p *ngIf="data.rides > 1">
+        Longest ride: <span>{{ data.longestRide }}</span> <b>km</b> <br />
+        Biggest climb: <span>{{ data.biggestClimb }}</span> <b>m</b>
+      </p>
+    </div>
   `,
-  styles: [``],
+  styles: [
+    `
+      .card {
+        height: 100%;
+        min-height: calc(100vh - 370px);
+        width: 100%;
+        background: var(--surface-card);
+        color: var(--text-color);
+        box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
+          0 1px 3px 0 rgba(0, 0, 0, 0.12);
+        border-radius: 6px;
+        padding: 0.5rem 1.25rem 1rem;
+      }
+
+      p {
+        color: var(--text-color-secondary);
+      }
+
+      span {
+        color: var(--text-color);
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      b {
+        color: var(--text-color);
+        margin-left: 4px;
+      }
+    `,
+  ],
 })
 export class TotalsCardComponent {
   @Input() title!: string
   @Input() set totals(values: Totals) {
     this.data = values
     this.hasRides = !!values.rides
-    this.hasOnlyRoadRides =
-      Object.keys(values.ridesByType).length === 1 &&
-      Object.keys(values.ridesByType).includes('Ride')
-    if (!this.hasOnlyRoadRides) {
+    if (values.rides) {
       this.composeRidesByType(values.ridesByType)
     }
   }
 
   public data!: Totals
   public hasRides = false
-  public hasOnlyRoadRides = false
   public ridesByType = ''
 
   constructor() {}
 
   private composeRidesByType(rides: Record<SportType, number>): void {
+    const types = Object.keys(rides)
+    if (types.length === 1) {
+      if (types[0] === 'Ride') {
+        this.ridesByType = 'All Road Rides'
+        return
+      } else {
+        this.ridesByType = `All ${separateWords(types[0])}s`
+        return
+      }
+    }
     if (rides['Ride']) {
       this.ridesByType += `${rides['Ride']} Road Ride${rides['Ride'] > 1 ? 's' : ''}, `
     }

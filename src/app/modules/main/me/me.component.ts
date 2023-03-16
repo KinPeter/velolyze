@@ -35,9 +35,10 @@ import { CalendarHeatmapData, TotalsPerPeriod } from './me.types'
     `
       section.totals {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(1, 1fr);
         grid-gap: 1rem;
+        max-width: 1500px;
       }
     `,
   ],

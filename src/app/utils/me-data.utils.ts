@@ -124,7 +124,7 @@ export function getTotals(activities: StravaActivity[]): Totals {
 
 export function getTotalsForPeriods(activities: Activity[]): TotalsPerPeriod {
   const now = new Date()
-  const startOfWeekTime = startOfWeek(now).getTime()
+  const startOfWeekTime = startOfWeek(now, { weekStartsOn: 1 }).getTime()
   const startOfMonthTime = startOfMonth(now).getTime()
   const startOfYearTime = startOfYear(now).getTime()
   const weekActivities: StravaActivity[] = []
