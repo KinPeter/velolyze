@@ -1,3 +1,5 @@
+import { SportType } from '../modules/strava/strava.types'
+
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'medium',
@@ -18,4 +20,9 @@ export function roundToOneDecimal(number: number): number {
 
 export function separateWords(string: string): string {
   return string.replace(/([A-Z])/g, ' $1').trim()
+}
+
+export function getSportType(sportType: SportType): string {
+  if (sportType === 'Ride') return 'Road Ride'
+  return separateWords(sportType)
 }

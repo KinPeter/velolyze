@@ -84,7 +84,7 @@ import { formatDate } from '../../../utils/utils'
               </td>
               <td>{{ item.start_date | date }}</td>
               <td>{{ item.name }}</td>
-              <td>{{ item.sport_type }}</td>
+              <td>{{ item.sport_type | sportType }}</td>
               <td>{{ item.distance | metersToKms }} km</td>
               <td>{{ item.total_elevation_gain }} m</td>
             </tr>

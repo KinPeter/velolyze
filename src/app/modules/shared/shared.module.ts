@@ -7,14 +7,16 @@ import { RippleModule } from 'primeng/ripple'
 import { FormsModule } from '@angular/forms'
 import { MetersToKmsPipe } from '../../utils/meters-to-kms.pipe'
 import { StravaAthleteComponent } from './components/strava-athlete.component'
+import { SportTypePipe } from '../../utils/sport-type.pipe'
 
 @NgModule({
-  declarations: [SideMenuComponent, StravaAthleteComponent, MetersToKmsPipe],
+  declarations: [SideMenuComponent, StravaAthleteComponent, MetersToKmsPipe, SportTypePipe],
   imports: [CommonModule, FormsModule, PrimeNgModule, RouterModule, RippleModule],
   exports: [
     FormsModule,
     MetersToKmsPipe,
     SideMenuComponent,
+    SportTypePipe,
     StravaAthleteComponent,
     PrimeNgModule,
     RippleModule,
