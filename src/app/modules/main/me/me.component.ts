@@ -43,7 +43,11 @@ import { CalendarHeatmapData, DistancePerPeriods, TotalsPerPeriod } from './me.t
           [lineChartData]="daysForPeriods.thisYear"
           title="This year"
         ></velo-totals-card>
-        <velo-totals-card [totals]="totals.allTimes" title="All times"></velo-totals-card>
+        <velo-totals-card
+          [totals]="totals.allTimes"
+          [donutChartData]="totals.allTimes.ridesByType"
+          title="All times"
+        ></velo-totals-card>
       </section>
     </ng-template>
   `,

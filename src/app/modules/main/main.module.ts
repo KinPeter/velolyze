@@ -10,6 +10,7 @@ import { NoDataComponent } from './common/no-data.component'
 import { CalendarHeatmapComponent } from './me/components/calendar-heatmap.component'
 import { TotalsCardComponent } from './common/totals-card.component'
 import { SimpleLineChartComponent } from './common/simple-line-chart.component'
+import { DonutChartComponent } from './common/donut-chart.component'
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { SimpleLineChartComponent } from './common/simple-line-chart.component'
     CalendarHeatmapComponent,
     TotalsCardComponent,
     SimpleLineChartComponent,
+    DonutChartComponent,
   ],
   imports: [CommonModule, MainRoutingModule, SharedModule],
 })

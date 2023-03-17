@@ -36,6 +36,10 @@ import { separateWords } from '../../../utils/utils'
           *ngIf="lineChartData"
           [lineChartData]="lineChartData"
         ></velo-simple-line-chart>
+        <velo-donut-chart
+          *ngIf="donutChartData"
+          [donutChartData]="donutChartData"
+        ></velo-donut-chart>
       </section>
     </div>
   `,
@@ -74,6 +78,7 @@ export class TotalsCardComponent {
     }
   }
   @Input() lineChartData: number[] | undefined
+  @Input() donutChartData: Record<string, number> | undefined
 
   public data!: Totals
   public hasRides = false
