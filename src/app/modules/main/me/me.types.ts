@@ -34,8 +34,8 @@ export interface TotalsPerPeriod {
   allTimes: Totals
 }
 
-export interface DaysPerPeriods {
-  thisWeek: DistancePerDay[]
-  thisMonth: DistancePerDay[]
-  thisYear: DistancePerDay[]
+export interface DistancePerPeriods {
+  thisWeek: number[]
+  thisMonth: number[]
+  thisYear: number[]
 }

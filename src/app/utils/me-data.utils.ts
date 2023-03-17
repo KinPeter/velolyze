@@ -1,7 +1,7 @@
 import { Activity } from '../modules/shared/types/activities'
 import {
   CalendarHeatmapData,
-  DaysPerPeriods,
+  DistancePerPeriods,
   DistancePerDay,
   Totals,
   TotalsPerPeriod,
@@ -151,30 +151,50 @@ export function getTotalsForPeriods(activities: Activity[]): TotalsPerPeriod {
   }
 }
 
-export function getDaysForPeriods(distancePerDays: DistancePerDay[]): DaysPerPeriods {
+export function getDaysForPeriods(distancePerDays: DistancePerDay[]): DistancePerPeriods {
   const now = new Date()
   const startOfWeekDate = startOfWeek(now, { weekStartsOn: 1 })
   const startOfMonthDate = startOfMonth(now)
   const startOfYearDate = startOfYear(now)
 
-  const yearData = distancePerDays.slice(
-    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfYearDate))
-  )
-  const monthData = distancePerDays.slice(
-    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfMonthDate))
-  )
-  const weekData = distancePerDays.slice(
-    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfWeekDate))
-  )
-
-  const fillingDay = {
-    date: new Date(0),
-    distance: 0,
-  }
+  const yearData = distancePerDays
+    .slice(distancePerDays.findIndex(({ date }) => isSameDay(date, startOfYearDate)))
+    .map(({ distance }) => distance)
+  const monthData = distancePerDays
+    .slice(distancePerDays.findIndex(({ date }) => isSameDay(date, startOfMonthDate)))
+    .map(({ distance }) => distance)
+  const weekData = distancePerDays
+    .slice(distancePerDays.findIndex(({ date }) => isSameDay(date, startOfWeekDate)))
+    .map(({ distance }) => distance)
 
   return {
-    thisWeek: [...weekData, ...new Array(7 - weekData.length).fill(fillingDay)],
-    thisMonth: [...monthData, ...new Array(31 - monthData.length).fill(fillingDay)],
-    thisYear: [...yearData, ...new Array(365 - yearData.length).fill(fillingDay)],
+    thisWeek: [...weekData, ...new Array(7 - weekData.length).fill(0)],
+    thisMonth: [...monthData, ...new Array(31 - monthData.length).fill(0)],
+    thisYear: getWeeklyDistance(
+      [...yearData, ...new Array(365 - yearData.length).fill(0)],
+      startOfYearDate.getDay()
+    ),
   }
+}
+
+function getWeeklyDistance(days: number[], startingDay: number): number[] {
+  if (startingDay === 0) {
+    startingDay = 7 // Let Sunday be 7
+  }
+  let firstWeek = 0
+  const daysInFirstWeek = 7 - startingDay
+  for (let i = 0; i <= daysInFirstWeek; i++) {
+    firstWeek += days[i]
+  }
+  const result: number[] = [roundToOneDecimal(firstWeek)]
+  let currentWeek = 0
+  for (let i = 0; i < days.length; i++) {
+    if (i <= daysInFirstWeek) continue
+    currentWeek += days[i]
+    if (i % 7 === 0) {
+      result.push(roundToOneDecimal(currentWeek))
+      currentWeek = 0
+    }
+  }
+  return result
 }

@@ -8,12 +8,14 @@ import { FormsModule } from '@angular/forms'
 import { MetersToKmsPipe } from '../../utils/meters-to-kms.pipe'
 import { StravaAthleteComponent } from './components/strava-athlete.component'
 import { SportTypePipe } from '../../utils/sport-type.pipe'
+import { NgChartsModule } from 'ng2-charts'
 
 @NgModule({
   declarations: [SideMenuComponent, StravaAthleteComponent, MetersToKmsPipe, SportTypePipe],
-  imports: [CommonModule, FormsModule, PrimeNgModule, RouterModule, RippleModule],
+  imports: [CommonModule, FormsModule, NgChartsModule, PrimeNgModule, RouterModule, RippleModule],
   exports: [
     FormsModule,
+    NgChartsModule,
     MetersToKmsPipe,
     SideMenuComponent,
     SportTypePipe,

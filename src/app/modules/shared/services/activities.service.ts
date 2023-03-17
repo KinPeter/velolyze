@@ -35,6 +35,7 @@ export class ActivitiesService extends Store<ActivitiesState> {
     try {
       if (Caching.isValid) {
         this.setState({ activities: Caching.data })
+        console.log('Using data from cache')
         return
       }
       const response = await this.firestoreService.query<Activity>(FirestoreCollection.ACTIVITIES, {
@@ -42,6 +43,7 @@ export class ActivitiesService extends Store<ActivitiesState> {
         operator: '==',
         value: userId,
       })
+      console.log('Fetching data from DB')
       Caching.cacheData(response)
       this.setState({ activities: response })
     } catch (e) {

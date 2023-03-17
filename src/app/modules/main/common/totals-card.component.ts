@@ -31,7 +31,12 @@ import { separateWords } from '../../../utils/utils'
           Biggest climb: <span>{{ data.biggestClimb }}</span> <b>m</b>
         </p>
       </section>
-      <section class="chart">chart</section>
+      <section class="chart">
+        <velo-simple-line-chart
+          *ngIf="lineChartData"
+          [lineChartData]="lineChartData"
+        ></velo-simple-line-chart>
+      </section>
     </div>
   `,
   styles: [
@@ -68,6 +73,7 @@ export class TotalsCardComponent {
       this.composeRidesByType(values.ridesByType)
     }
   }
+  @Input() lineChartData: number[] | undefined
 
   public data!: Totals
   public hasRides = false

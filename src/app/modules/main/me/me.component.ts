@@ -10,7 +10,7 @@ import {
   getDaysForPeriods,
   getTotalsForPeriods,
 } from '../../../utils/me-data.utils'
-import { CalendarHeatmapData, DaysPerPeriods, TotalsPerPeriod } from './me.types'
+import { CalendarHeatmapData, DistancePerPeriods, TotalsPerPeriod } from './me.types'
 
 @Component({
   selector: 'velo-me',
@@ -28,9 +28,21 @@ import { CalendarHeatmapData, DaysPerPeriods, TotalsPerPeriod } from './me.types
       ></velo-no-data>
       <velo-calendar-heatmap [days]="calendarHeatmapDays"></velo-calendar-heatmap>
       <section class="totals">
-        <velo-totals-card [totals]="totals.thisWeek" title="This week"></velo-totals-card>
-        <velo-totals-card [totals]="totals.thisMonth" title="This month"></velo-totals-card>
-        <velo-totals-card [totals]="totals.thisYear" title="This year"></velo-totals-card>
+        <velo-totals-card
+          [totals]="totals.thisWeek"
+          [lineChartData]="daysForPeriods.thisWeek"
+          title="This week"
+        ></velo-totals-card>
+        <velo-totals-card
+          [totals]="totals.thisMonth"
+          [lineChartData]="daysForPeriods.thisMonth"
+          title="This month"
+        ></velo-totals-card>
+        <velo-totals-card
+          [totals]="totals.thisYear"
+          [lineChartData]="daysForPeriods.thisYear"
+          title="This year"
+        ></velo-totals-card>
         <velo-totals-card [totals]="totals.allTimes" title="All times"></velo-totals-card>
       </section>
     </ng-template>
@@ -56,7 +68,7 @@ export class MeComponent implements OnDestroy {
   public athlete: Partial<StravaAthlete> | undefined
   public activities: Activity[] = []
   public calendarHeatmapDays: CalendarHeatmapData[] = []
-  public daysForPeriods: DaysPerPeriods = {} as DaysPerPeriods
+  public daysForPeriods: DistancePerPeriods = {} as DistancePerPeriods
   public totals!: TotalsPerPeriod
 
   private unsubscribe$ = new Subject<boolean>()

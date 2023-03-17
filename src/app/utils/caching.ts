@@ -10,8 +10,8 @@ export class Caching {
     const storedValidity = localStorage.getItem(this.validKey)
     if (!storedData || !storedValidity) return false
 
-    const { valid, expiry } = JSON.parse(storedValidity) as { valid: boolean; expiry: number }
-    return valid && expiry > Date.now()
+    const { valid, expires } = JSON.parse(storedValidity) as { valid: boolean; expires: number }
+    return valid && expires > Date.now()
   }
 
   public static get data(): Activity[] {
