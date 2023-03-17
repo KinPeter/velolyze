@@ -6,43 +6,40 @@ import { separateWords } from '../../../utils/utils'
 @Component({
   selector: 'velo-totals-card',
   template: `
-    <div class="card">
-      <h1>{{ title }}</h1>
-      <p>
-        <span>{{ data.rides }}</span> Ride<ng-container *ngIf="data.rides !== 1">s</ng-container>
-      </p>
-      <p *ngIf="hasRides">
-        {{ ridesByType }}
-      </p>
-      <p>
-        <span>{{ data.distance }}</span> <b>km</b> of distance <br />
-        <span>{{ data.elevationGain }}</span> <b>m</b> of elevation gain <br />
-        <span>{{ data.movingTime }}</span> <b>hrs</b> of moving
-      </p>
-      <p *ngIf="data.achievementCount">
-        <span>{{ data.achievementCount }}</span> new achievements
-        <ng-container *ngIf="data.prCount">
-          <br />with <span>{{ data.prCount }}</span> personal records
-        </ng-container>
-      </p>
-      <p *ngIf="data.rides > 1">
-        Longest ride: <span>{{ data.longestRide }}</span> <b>km</b> <br />
-        Biggest climb: <span>{{ data.biggestClimb }}</span> <b>m</b>
-      </p>
+    <div class="card velo-card">
+      <section class="totals">
+        <h1>{{ title }}</h1>
+        <p>
+          <span>{{ data.rides }}</span> Ride<ng-container *ngIf="data.rides !== 1">s</ng-container>
+        </p>
+        <p *ngIf="hasRides">
+          {{ ridesByType }}
+        </p>
+        <p>
+          <span>{{ data.distance }}</span> <b>km</b> of distance <br />
+          <span>{{ data.elevationGain }}</span> <b>m</b> of elevation gain <br />
+          <span>{{ data.movingTime }}</span> <b>hrs</b> of moving
+        </p>
+        <p *ngIf="data.achievementCount">
+          <span>{{ data.achievementCount }}</span> new achievements
+          <ng-container *ngIf="data.prCount">
+            <br />with <span>{{ data.prCount }}</span> personal records
+          </ng-container>
+        </p>
+        <p *ngIf="data.rides > 1">
+          Longest ride: <span>{{ data.longestRide }}</span> <b>km</b> <br />
+          Biggest climb: <span>{{ data.biggestClimb }}</span> <b>m</b>
+        </p>
+      </section>
+      <section class="chart">chart</section>
     </div>
   `,
   styles: [
     `
       .card {
-        height: 100%;
-        min-height: calc(100vh - 370px);
-        width: 100%;
-        background: var(--surface-card);
-        color: var(--text-color);
-        box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
-          0 1px 3px 0 rgba(0, 0, 0, 0.12);
-        border-radius: 6px;
-        padding: 0.5rem 1.25rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       p {

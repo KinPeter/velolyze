@@ -5,6 +5,7 @@ import { NotificationService } from './notification.service'
 import { AuthStore } from './auth.store'
 import { FirestoreCollection } from '../../../constants/firestore-collections'
 import { Activity } from '../types/activities'
+import { Caching } from '../../../utils/caching'
 
 interface ActivitiesState {
   loading: boolean
@@ -32,14 +33,16 @@ export class ActivitiesService extends Store<ActivitiesState> {
   public async fetchAllForUser(userId: string): Promise<void> {
     this.setState({ loading: true })
     try {
+      if (Caching.isValid) {
+        this.setState({ activities: Caching.data })
+        return
+      }
       const response = await this.firestoreService.query<Activity>(FirestoreCollection.ACTIVITIES, {
         field: 'userId',
         operator: '==',
         value: userId,
       })
-      console.log(response)
-      // const response = JSON.parse(localStorage.getItem('temp') as string)
-      // localStorage.setItem('temp', JSON.stringify(response))
+      Caching.cacheData(response)
       this.setState({ activities: response })
     } catch (e) {
       this.notificationService.showError('Could not fetch activities.')

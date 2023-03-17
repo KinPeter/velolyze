@@ -11,6 +11,7 @@ import { FirebaseAppService } from './firebase-app.service'
 import { NotificationService } from '../modules/shared/services/notification.service'
 import { UserMetaService } from '../modules/shared/services/user-meta.service'
 import { AuthStore } from '../modules/shared/services/auth.store'
+import { Caching } from '../utils/caching'
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthService {
@@ -56,6 +57,7 @@ export class FirebaseAuthService {
 
   public async signOutFromFirebase(): Promise<void> {
     try {
+      Caching.invalidate()
       await signOut(this.auth)
     } catch (e) {
       this.notificationService.showError('Could not sign out')

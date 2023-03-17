@@ -1,8 +1,11 @@
 import { SportType } from '../../strava/strava.types'
 
-export interface CalendarHeatmapData {
+export interface DistancePerDay {
   date: Date
   distance: number
+}
+
+export interface CalendarHeatmapData extends DistancePerDay {
   rides: number
   dayOfWeek: number
   dayOfMonth: number
@@ -29,4 +32,10 @@ export interface TotalsPerPeriod {
   thisMonth: Totals
   thisYear: Totals
   allTimes: Totals
+}
+
+export interface DaysPerPeriods {
+  thisWeek: DistancePerDay[]
+  thisMonth: DistancePerDay[]
+  thisYear: DistancePerDay[]
 }

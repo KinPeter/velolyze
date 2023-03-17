@@ -6,6 +6,7 @@ import { FirestoreService } from '../../firebase/firestore.service'
 import { AuthStore } from '../shared/services/auth.store'
 import { FirestoreCollection } from '../../constants/firestore-collections'
 import { NotificationService } from '../shared/services/notification.service'
+import { Caching } from '../../utils/caching'
 
 @Injectable({ providedIn: 'root' })
 export class StravaSyncService extends Store<{ loading: boolean }> {
@@ -26,6 +27,7 @@ export class StravaSyncService extends Store<{ loading: boolean }> {
     activities: StravaActivity[]
   ): Promise<number> {
     this.setState({ loading: true })
+    Caching.invalidate()
     const activityIds = activities.map(({ id }) => id)
     const payload = activities.map(activity => ({
       id: this.authStore.currentUser?.uid + '_' + activity.id,

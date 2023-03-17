@@ -1,5 +1,11 @@
 import { Activity } from '../modules/shared/types/activities'
-import { CalendarHeatmapData, Totals, TotalsPerPeriod } from '../modules/main/me/me.types'
+import {
+  CalendarHeatmapData,
+  DaysPerPeriods,
+  DistancePerDay,
+  Totals,
+  TotalsPerPeriod,
+} from '../modules/main/me/me.types'
 import {
   addDays,
   isSameDay,
@@ -142,5 +148,33 @@ export function getTotalsForPeriods(activities: Activity[]): TotalsPerPeriod {
     thisMonth: getTotals(monthActivities),
     thisYear: getTotals(yearActivities),
     allTimes: getTotals(activities.map(({ activity }) => activity)),
+  }
+}
+
+export function getDaysForPeriods(distancePerDays: DistancePerDay[]): DaysPerPeriods {
+  const now = new Date()
+  const startOfWeekDate = startOfWeek(now, { weekStartsOn: 1 })
+  const startOfMonthDate = startOfMonth(now)
+  const startOfYearDate = startOfYear(now)
+
+  const yearData = distancePerDays.slice(
+    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfYearDate))
+  )
+  const monthData = distancePerDays.slice(
+    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfMonthDate))
+  )
+  const weekData = distancePerDays.slice(
+    distancePerDays.findIndex(({ date }) => isSameDay(date, startOfWeekDate))
+  )
+
+  const fillingDay = {
+    date: new Date(0),
+    distance: 0,
+  }
+
+  return {
+    thisWeek: [...weekData, ...new Array(7 - weekData.length).fill(fillingDay)],
+    thisMonth: [...monthData, ...new Array(31 - monthData.length).fill(fillingDay)],
+    thisYear: [...yearData, ...new Array(365 - yearData.length).fill(fillingDay)],
   }
 }

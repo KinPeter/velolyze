@@ -5,8 +5,12 @@ import { combineLatest, filter, Subject, takeUntil } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { StravaAthlete } from '../../strava/strava.types'
 import { Activity } from '../../shared/types/activities'
-import { getCalendarHeatmapData, getTotalsForPeriods } from '../../../utils/me-data.utils'
-import { CalendarHeatmapData, TotalsPerPeriod } from './me.types'
+import {
+  getCalendarHeatmapData,
+  getDaysForPeriods,
+  getTotalsForPeriods,
+} from '../../../utils/me-data.utils'
+import { CalendarHeatmapData, DaysPerPeriods, TotalsPerPeriod } from './me.types'
 
 @Component({
   selector: 'velo-me',
@@ -52,6 +56,7 @@ export class MeComponent implements OnDestroy {
   public athlete: Partial<StravaAthlete> | undefined
   public activities: Activity[] = []
   public calendarHeatmapDays: CalendarHeatmapData[] = []
+  public daysForPeriods: DaysPerPeriods = {} as DaysPerPeriods
   public totals!: TotalsPerPeriod
 
   private unsubscribe$ = new Subject<boolean>()
@@ -62,9 +67,9 @@ export class MeComponent implements OnDestroy {
   ) {
     this.activitiesService.activities$.pipe(takeUntil(this.unsubscribe$)).subscribe(activities => {
       this.activities = activities
-      // console.log(getActivitiesPerDay(activities))
-      // console.log(getCalendarHeatmapData(activities))
       this.calendarHeatmapDays = getCalendarHeatmapData(activities)
+      this.daysForPeriods = getDaysForPeriods(this.calendarHeatmapDays)
+      console.log(this.daysForPeriods)
       this.totals = getTotalsForPeriods(activities)
     })
     this.userMetaService.userMeta$

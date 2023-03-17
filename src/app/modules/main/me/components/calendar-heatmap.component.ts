@@ -106,7 +106,7 @@ export class CalendarHeatmapComponent {
     const monthLabels: { week: number; month: string }[] = []
     days.forEach((day, index) => {
       if (day.dayOfMonth === 1) {
-        monthLabels.push({ week: Math.floor(index / 7 + 1), month: day.month })
+        monthLabels.push({ week: Math.round(index / 7) + 1, month: day.month })
       }
     })
     this.monthLabels = monthLabels
