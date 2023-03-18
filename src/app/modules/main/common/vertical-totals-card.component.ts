@@ -1,10 +1,9 @@
 import { Component, Input } from '@angular/core'
 import { Totals } from '../me/me.types'
-import { SportType } from '../../strava/strava.types'
-import { separateWords } from '../../../utils/utils'
+import { composeRidesByType } from '../../../utils/me-data.utils'
 
 @Component({
-  selector: 'velo-totals-card',
+  selector: 'velo-vertical-totals-card',
   template: `
     <div class="card velo-card">
       <section class="totals">
@@ -46,6 +45,7 @@ import { separateWords } from '../../../utils/utils'
   styles: [
     `
       .card {
+        min-height: calc(100vh - 370px);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -68,13 +68,13 @@ import { separateWords } from '../../../utils/utils'
     `,
   ],
 })
-export class TotalsCardComponent {
+export class VerticalTotalsCardComponent {
   @Input() title!: string
   @Input() set totals(values: Totals) {
     this.data = values
     this.hasRides = !!values.rides
     if (values.rides) {
-      this.composeRidesByType(values.ridesByType)
+      this.ridesByType = composeRidesByType(values.ridesByType)
     }
   }
   @Input() lineChartData: number[] | undefined
@@ -85,27 +85,4 @@ export class TotalsCardComponent {
   public ridesByType = ''
 
   constructor() {}
-
-  private composeRidesByType(rides: Record<SportType, number>): void {
-    const types = Object.keys(rides)
-    if (types.length === 1) {
-      if (types[0] === 'Ride') {
-        this.ridesByType = 'All Road Rides'
-        return
-      } else {
-        this.ridesByType = `All ${separateWords(types[0])}s`
-        return
-      }
-    }
-    if (rides['Ride']) {
-      this.ridesByType += `${rides['Ride']} Road Ride${rides['Ride'] > 1 ? 's' : ''}, `
-    }
-    Object.entries(rides).forEach(([type, count], index, array) => {
-      if (type !== 'Ride') {
-        this.ridesByType += `${count} ${separateWords(type)}${count > 1 ? 's' : ''}${
-          index !== array.length - 1 ? ',' : ''
-        } `
-      }
-    })
-  }
 }

@@ -8,9 +8,10 @@ import { RoutesComponent } from './routes/routes.component'
 import { SharedModule } from '../shared/shared.module'
 import { NoDataComponent } from './common/no-data.component'
 import { CalendarHeatmapComponent } from './me/components/calendar-heatmap.component'
-import { TotalsCardComponent } from './common/totals-card.component'
+import { VerticalTotalsCardComponent } from './common/vertical-totals-card.component'
 import { SimpleLineChartComponent } from './common/simple-line-chart.component'
 import { DonutChartComponent } from './common/donut-chart.component'
+import { HorizontalTotalsCardComponent } from './common/horizontal-totals-card.component'
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { DonutChartComponent } from './common/donut-chart.component'
     ActivitiesComponent,
     RoutesComponent,
     CalendarHeatmapComponent,
-    TotalsCardComponent,
+    VerticalTotalsCardComponent,
+    HorizontalTotalsCardComponent,
     SimpleLineChartComponent,
     DonutChartComponent,
   ],

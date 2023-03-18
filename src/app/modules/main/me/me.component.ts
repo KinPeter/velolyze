@@ -28,26 +28,26 @@ import { CalendarHeatmapData, DistancePerPeriods, TotalsPerPeriod } from './me.t
       ></velo-no-data>
       <velo-calendar-heatmap [days]="calendarHeatmapDays"></velo-calendar-heatmap>
       <section class="totals">
-        <velo-totals-card
+        <velo-vertical-totals-card
           [totals]="totals.thisWeek"
           [lineChartData]="daysForPeriods.thisWeek"
           title="This week"
-        ></velo-totals-card>
-        <velo-totals-card
+        ></velo-vertical-totals-card>
+        <velo-vertical-totals-card
           [totals]="totals.thisMonth"
           [lineChartData]="daysForPeriods.thisMonth"
           title="This month"
-        ></velo-totals-card>
-        <velo-totals-card
+        ></velo-vertical-totals-card>
+        <velo-vertical-totals-card
           [totals]="totals.thisYear"
           [lineChartData]="daysForPeriods.thisYear"
           title="This year"
-        ></velo-totals-card>
-        <velo-totals-card
+        ></velo-vertical-totals-card>
+        <velo-vertical-totals-card
           [totals]="totals.allTimes"
           [donutChartData]="totals.allTimes.ridesByType"
           title="All times"
-        ></velo-totals-card>
+        ></velo-vertical-totals-card>
       </section>
     </ng-template>
   `,
@@ -85,7 +85,6 @@ export class MeComponent implements OnDestroy {
       this.activities = activities
       this.calendarHeatmapDays = getCalendarHeatmapData(activities)
       this.daysForPeriods = getDaysForPeriods(this.calendarHeatmapDays)
-      console.log(this.daysForPeriods)
       this.totals = getTotalsForPeriods(activities)
     })
     this.userMetaService.userMeta$

@@ -12,6 +12,8 @@ import { CardModule } from 'primeng/card'
 import { TagModule } from 'primeng/tag'
 import { TableModule } from 'primeng/table'
 import { TooltipModule } from 'primeng/tooltip'
+import { SidebarModule } from 'primeng/sidebar'
+import { TabViewModule } from 'primeng/tabview'
 
 @NgModule({
   declarations: [],
@@ -21,12 +23,14 @@ import { TooltipModule } from 'primeng/tooltip'
     CalendarModule,
     CardModule,
     MenuModule,
-    ToastModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    SidebarModule,
     TableModule,
+    TabViewModule,
     TagModule,
+    ToastModule,
     TooltipModule,
   ],
   exports: [
@@ -34,12 +38,14 @@ import { TooltipModule } from 'primeng/tooltip'
     CalendarModule,
     CardModule,
     MenuModule,
-    ToastModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    SidebarModule,
     TableModule,
+    TabViewModule,
     TagModule,
+    ToastModule,
     TooltipModule,
   ],
   providers: [MessageService],

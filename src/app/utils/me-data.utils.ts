@@ -16,7 +16,7 @@ import {
   subDays,
 } from 'date-fns'
 import { SportType, StravaActivity } from '../modules/strava/strava.types'
-import { formatDate, metersToKms, roundToOneDecimal, secondsToHours } from './utils'
+import { formatDate, metersToKms, roundToOneDecimal, secondsToHours, separateWords } from './utils'
 
 export function getCalendarHeatmapData(activities: Activity[]): CalendarHeatmapData[] {
   const dates = []
@@ -149,6 +149,29 @@ export function getTotalsForPeriods(activities: Activity[]): TotalsPerPeriod {
     thisYear: getTotals(yearActivities),
     allTimes: getTotals(activities.map(({ activity }) => activity)),
   }
+}
+
+export function composeRidesByType(rides: Record<SportType, number>): string {
+  const types = Object.keys(rides)
+  if (types.length === 1) {
+    if (types[0] === 'Ride') {
+      return 'All Road Rides'
+    } else {
+      return `All ${separateWords(types[0])}s`
+    }
+  }
+  let result = ''
+  if (rides['Ride']) {
+    result += `${rides['Ride']} Road Ride${rides['Ride'] > 1 ? 's' : ''}, `
+  }
+  Object.entries(rides).forEach(([type, count], index, array) => {
+    if (type !== 'Ride') {
+      result += `${count} ${separateWords(type)}${count > 1 ? 's' : ''}${
+        index !== array.length - 1 ? ',' : ''
+      } `
+    }
+  })
+  return result
 }
 
 export function getDaysForPeriods(distancePerDays: DistancePerDay[]): DistancePerPeriods {
