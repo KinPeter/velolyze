@@ -22,22 +22,27 @@ export enum RideEnvironment {
 export interface ActivityFilters {
   periodType: FilterPeriodType
   dateRange: [Date, Date] | null
-  year: number | null
-  month: [number, number] | null
-  city: string
-  country: string
-  type: SportType | 'ALL'
+  year: Date | null
+  month: Date | null
+  cities: string[] | null
+  countries: string[] | null
+  types: SportType[] | null
   environment: RideEnvironment
-  bike: string | number
-  distance: { min: number; max: number }
-  elevation: { min: number; max: number }
+  bikes: string[] | null
+  distance: [number, number]
+  elevation: [number, number]
+}
+
+export interface SportTypeOption {
+  name: string
+  type: SportType
 }
 
 export interface ActivityFilterOptions {
   startYear: number
   cities: string[]
   countries: string[]
-  types: SportType[]
+  types: SportTypeOption[]
   hasIndoor: boolean
   maxDistance: number
   maxElevation: number

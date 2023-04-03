@@ -16,6 +16,8 @@ import { SidebarModule } from 'primeng/sidebar'
 import { TabViewModule } from 'primeng/tabview'
 import { RadioButtonModule } from 'primeng/radiobutton'
 import { DropdownModule } from 'primeng/dropdown'
+import { MultiSelectModule } from 'primeng/multiselect'
+import { SliderModule } from 'primeng/slider'
 
 @NgModule({
   declarations: [],
@@ -28,9 +30,11 @@ import { DropdownModule } from 'primeng/dropdown'
     MenuModule,
     MessageModule,
     MessagesModule,
+    MultiSelectModule,
     ProgressSpinnerModule,
     RadioButtonModule,
     SidebarModule,
+    SliderModule,
     TableModule,
     TabViewModule,
     TagModule,
@@ -45,9 +49,11 @@ import { DropdownModule } from 'primeng/dropdown'
     MenuModule,
     MessageModule,
     MessagesModule,
+    MultiSelectModule,
     ProgressSpinnerModule,
     RadioButtonModule,
     SidebarModule,
+    SliderModule,
     TableModule,
     TabViewModule,
     TagModule,
