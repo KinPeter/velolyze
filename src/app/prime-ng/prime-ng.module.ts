@@ -14,6 +14,8 @@ import { TableModule } from 'primeng/table'
 import { TooltipModule } from 'primeng/tooltip'
 import { SidebarModule } from 'primeng/sidebar'
 import { TabViewModule } from 'primeng/tabview'
+import { RadioButtonModule } from 'primeng/radiobutton'
+import { DropdownModule } from 'primeng/dropdown'
 
 @NgModule({
   declarations: [],
@@ -22,10 +24,12 @@ import { TabViewModule } from 'primeng/tabview'
     ButtonModule,
     CalendarModule,
     CardModule,
+    DropdownModule,
     MenuModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    RadioButtonModule,
     SidebarModule,
     TableModule,
     TabViewModule,
@@ -37,10 +41,12 @@ import { TabViewModule } from 'primeng/tabview'
     ButtonModule,
     CalendarModule,
     CardModule,
+    DropdownModule,
     MenuModule,
     MessageModule,
     MessagesModule,
     ProgressSpinnerModule,
+    RadioButtonModule,
     SidebarModule,
     TableModule,
     TabViewModule,

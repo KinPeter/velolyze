@@ -24,7 +24,7 @@ export interface Totals {
   prCount: number
   ridesByType: Record<SportType, number>
   longestRide: number
-  biggestClimb: number
+  mostElevation: number
 }
 
 export interface TotalsPerPeriod {

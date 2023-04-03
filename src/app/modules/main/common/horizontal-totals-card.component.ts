@@ -43,7 +43,7 @@ import { composeRidesByType } from '../../../utils/me-data.utils'
           </p>
           <p *ngIf="data.rides > 1">
             Longest ride: <span>{{ data.longestRide }}</span> <b>km</b> <br />
-            Biggest climb: <span>{{ data.biggestClimb }}</span> <b>m</b>
+            Most elevation: <span>{{ data.mostElevation }}</span> <b>m</b>
           </p>
         </div>
       </section>

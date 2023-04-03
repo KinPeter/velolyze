@@ -2,11 +2,12 @@ import { Component, OnDestroy } from '@angular/core'
 import { combineLatest, filter, Subject, takeUntil } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { StravaBikeData } from '../../strava/strava.types'
-import { Activity } from '../../shared/types/activities'
+import { Activity, ActivityFilterOptions } from '../../shared/types/activities'
 import { ActivitiesService } from '../../shared/services/activities.service'
 import { UserMetaService } from '../../shared/services/user-meta.service'
 import { Totals } from '../me/me.types'
 import { getTotals } from '../../../utils/me-data.utils'
+import { getFilterOptions } from '../../../utils/activity.utils'
 
 @Component({
   selector: 'velo-activities',
@@ -20,7 +21,7 @@ import { getTotals } from '../../../utils/me-data.utils'
       styleClass="p-sidebar-lg"
       [showCloseIcon]="true"
     >
-      Filters
+      <velo-filters [filterOptions]="filterOptions" [bikeOptions]="bikes"></velo-filters>
     </p-sidebar>
     <ng-template #outerContainer>
       <velo-no-data *ngIf="!activities.length; else activitiesContainer"></velo-no-data>
@@ -71,6 +72,7 @@ export class ActivitiesComponent implements OnDestroy {
   public activities: Activity[] = []
   public totals!: Totals
   public filtersOpen = false
+  public filterOptions!: ActivityFilterOptions
   public title = 'All rides'
 
   private unsubscribe$ = new Subject<boolean>()
@@ -82,6 +84,7 @@ export class ActivitiesComponent implements OnDestroy {
     this.activitiesService.activities$.pipe(takeUntil(this.unsubscribe$)).subscribe(activities => {
       this.activities = activities
       this.totals = getTotals(activities.map(a => a.activity))
+      this.filterOptions = getFilterOptions(activities)
     })
     this.userMetaService.userMeta$
       .pipe(filter(Boolean), takeUntil(this.unsubscribe$))

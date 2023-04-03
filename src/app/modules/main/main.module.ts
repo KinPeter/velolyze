@@ -12,6 +12,7 @@ import { VerticalTotalsCardComponent } from './common/vertical-totals-card.compo
 import { SimpleLineChartComponent } from './common/simple-line-chart.component'
 import { DonutChartComponent } from './common/donut-chart.component'
 import { HorizontalTotalsCardComponent } from './common/horizontal-totals-card.component'
+import { FiltersComponent } from './common/filters.component'
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { HorizontalTotalsCardComponent } from './common/horizontal-totals-card.c
     HorizontalTotalsCardComponent,
     SimpleLineChartComponent,
     DonutChartComponent,
+    FiltersComponent,
   ],
   imports: [CommonModule, MainRoutingModule, SharedModule],
 })

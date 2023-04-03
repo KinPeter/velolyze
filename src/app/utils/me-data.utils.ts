@@ -86,7 +86,7 @@ export function getTotals(activities: StravaActivity[]): Totals {
   let prCount = 0
   const ridesByType = {} as Record<SportType, number>
   let longestRide = activities[0]?.distance ?? 0
-  let biggestClimb = activities[0]?.total_elevation_gain ?? 0
+  let mostElevation = activities[0]?.total_elevation_gain ?? 0
 
   activities.forEach(item => {
     distance += item.distance
@@ -110,8 +110,8 @@ export function getTotals(activities: StravaActivity[]): Totals {
     if (item.distance > longestRide) {
       longestRide = item.distance
     }
-    if (item.total_elevation_gain > biggestClimb) {
-      biggestClimb = item.total_elevation_gain
+    if (item.total_elevation_gain > mostElevation) {
+      mostElevation = item.total_elevation_gain
     }
   })
 
@@ -124,7 +124,7 @@ export function getTotals(activities: StravaActivity[]): Totals {
     prCount,
     ridesByType,
     longestRide: metersToKms(longestRide),
-    biggestClimb: roundToOneDecimal(biggestClimb),
+    mostElevation: roundToOneDecimal(mostElevation),
   }
 }
 

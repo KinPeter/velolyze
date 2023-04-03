@@ -126,12 +126,14 @@ export class UserMetaService extends Store<UserMetaState> {
       const uploadedActivities = [...userData.uploadedActivities, ...syncedIds]
       const city = athlete.city ?? ''
       const country = athlete.country ?? ''
+      const stravaProfilePicUrl = athlete.profile ?? ''
       await this.firestoreService.updateById<UserMeta>(FirestoreCollection.USER_META, userData.id, {
         lastSyncDate,
         uploadedActivities,
         bikes,
         city,
         country,
+        stravaProfilePicUrl,
       })
       this.setState({
         data: {
