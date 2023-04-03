@@ -6,6 +6,13 @@ export function formatDate(date: Date): string {
   }).format(date)
 }
 
+export function formatMonth(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+}
+
 export function metersToKms(meters: number): number {
   return Math.round(meters / 100) / 10
 }

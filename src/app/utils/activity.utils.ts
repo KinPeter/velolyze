@@ -6,7 +6,7 @@ import {
   RideEnvironment,
 } from '../modules/shared/types/activities'
 import { SportType } from '../modules/strava/strava.types'
-import { getSportType, metersToKms, roundToOneDecimal } from './utils'
+import { formatDate, formatMonth, getSportType, metersToKms, roundToOneDecimal } from './utils'
 import { endOfMonth, endOfYear, startOfMonth, startOfYear } from 'date-fns'
 
 export function getFilterOptions(activities: Activity[]): ActivityFilterOptions {
@@ -107,4 +107,24 @@ export function filterActivities(activities: Activity[], filters: ActivityFilter
       elevation <= maxElevation
     )
   })
+}
+
+export function generateFilterTitle(filters: ActivityFilters): string {
+  let title = ''
+
+  if (filters.types?.length === 1) {
+    title += `${getSportType(filters.types[0])}s`
+  } else {
+    title += 'Rides'
+  }
+  if (filters.periodType === FilterPeriodType.YEAR && filters.year) {
+    title += ' in ' + filters.year.getFullYear()
+  } else if (filters.periodType === FilterPeriodType.MONTH && filters.month) {
+    title += ' in ' + formatMonth(filters.month)
+  } else if (filters.periodType === FilterPeriodType.RANGE && filters.dateRange) {
+    const [start, end] = filters.dateRange
+    title += ` between ${formatDate(start)} and ${formatDate(end)}`
+  }
+
+  return title
 }

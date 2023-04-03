@@ -1,12 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core'
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { StravaBikeData } from '../../strava/strava.types'
 import {
+  ActivityFilterEvent,
   ActivityFilterOptions,
   ActivityFilters,
   FilterPeriodType,
   RideEnvironment,
 } from '../../shared/types/activities'
+import { Subject, takeUntil } from 'rxjs'
 
 @Component({
   selector: 'velo-filters',
@@ -229,7 +231,7 @@ import {
     `,
   ],
 })
-export class FiltersComponent {
+export class FiltersComponent implements OnInit, OnDestroy {
   @Input() set filterOptions(options: ActivityFilterOptions) {
     this.startDate = new Date(options.startYear, 0, 1)
     this.cities = options.cities
@@ -250,10 +252,11 @@ export class FiltersComponent {
   @Input() set appliedFilters(filters: ActivityFilters | undefined) {
     if (filters) {
       this.form.setValue(filters)
+      this.shouldReset = false
     }
   }
 
-  @Output() filter = new EventEmitter<ActivityFilters>()
+  @Output() filter = new EventEmitter<ActivityFilterEvent>()
 
   public periodTypeEnum = FilterPeriodType
   public periodTypes = Object.values(FilterPeriodType)
@@ -281,7 +284,20 @@ export class FiltersComponent {
     elevation: [[0, 0]],
   })
 
+  private shouldReset = false
+  private unsubscribe$ = new Subject<boolean>()
+
   constructor(private formBuilder: FormBuilder) {}
+
+  public ngOnInit() {
+    this.form.valueChanges.pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+      this.shouldReset = false
+    })
+  }
+
+  public ngOnDestroy() {
+    this.unsubscribe$.next(true)
+  }
 
   public resetFilters(): void {
     this.form.setValue({
@@ -297,9 +313,11 @@ export class FiltersComponent {
       distance: [0, this.maxDistance],
       elevation: [0, this.maxElevation],
     })
+    this.shouldReset = true
   }
 
   public filterRides(): void {
-    this.filter.emit(this.form.value)
+    this.filter.emit({ reset: this.shouldReset, filters: this.form.value })
+    this.shouldReset = false
   }
 }

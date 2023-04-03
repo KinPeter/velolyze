@@ -2,12 +2,21 @@ import { Component, OnDestroy } from '@angular/core'
 import { combineLatest, filter, Subject, takeUntil } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { StravaBikeData } from '../../strava/strava.types'
-import { Activity, ActivityFilterOptions, ActivityFilters } from '../../shared/types/activities'
+import {
+  Activity,
+  ActivityFilterEvent,
+  ActivityFilterOptions,
+  ActivityFilters,
+} from '../../shared/types/activities'
 import { ActivitiesService } from '../../shared/services/activities.service'
 import { UserMetaService } from '../../shared/services/user-meta.service'
 import { Totals } from '../me/me.types'
 import { getTotals } from '../../../utils/me-data.utils'
-import { filterActivities, getFilterOptions } from '../../../utils/activity.utils'
+import {
+  filterActivities,
+  generateFilterTitle,
+  getFilterOptions,
+} from '../../../utils/activity.utils'
 
 @Component({
   selector: 'velo-activities',
@@ -105,12 +114,12 @@ export class ActivitiesComponent implements OnDestroy {
     this.unsubscribe$.next(true)
   }
 
-  public onFilter(filters: ActivityFilters): void {
+  public onFilter({ reset, filters }: ActivityFilterEvent): void {
     const filteredActivities = filterActivities(this.activities, filters)
     this.totals = getTotals(filteredActivities.map(a => a.activity))
+    this.title = reset ? 'All rides' : generateFilterTitle(filters)
     this.filteredActivities = filteredActivities
     this.appliedFilters = filters
     this.filtersOpen = false
-    console.log({ filters })
   }
 }

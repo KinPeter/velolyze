@@ -19,6 +19,11 @@ export enum RideEnvironment {
   ALL = 'All',
 }
 
+export interface ActivityFilterEvent {
+  reset: boolean
+  filters: ActivityFilters
+}
+
 export interface ActivityFilters {
   periodType: FilterPeriodType
   dateRange: [Date, Date] | null
