@@ -73,6 +73,18 @@ import { Subject, takeUntil } from 'rxjs'
             <label for="month">Month</label>
           </span>
         </div>
+        <div class="search">
+          <span class="p-float-label">
+            <input
+              type="text"
+              pInputText
+              id="search"
+              formControlName="searchTerm"
+              class="velo-filter-input"
+            />
+            <label htmlFor="search">Search by text</label>
+          </span>
+        </div>
       </section>
 
       <section class="dropdowns">
@@ -135,6 +147,10 @@ import { Subject, takeUntil } from 'rxjs'
             <label for="bike">Ride types</label>
           </span>
         </div>
+        <div class="switch">
+          <p-inputSwitch formControlName="hideCommutes" inputId="commutes"></p-inputSwitch>
+          <label for="commutes">Hide commutes</label>
+        </div>
       </section>
 
       <section class="dropdowns">
@@ -175,6 +191,18 @@ import { Subject, takeUntil } from 'rxjs'
             [max]="maxElevation"
           ></p-slider>
         </div>
+        <div class="slider">
+          <label for="startHour">
+            Start hour: {{ form.value['startHour'][0] }} h - {{ form.value['startHour'][1] }} h
+          </label>
+          <p-slider
+            formControlName="startHour"
+            [range]="true"
+            [min]="0"
+            [max]="24"
+            [step]="1"
+          ></p-slider>
+        </div>
       </section>
 
       <section class="actions">
@@ -201,6 +229,10 @@ import { Subject, takeUntil } from 'rxjs'
         flex-wrap: wrap;
       }
 
+      section.dates {
+        padding-top: 2rem;
+      }
+
       .period-types {
         display: flex;
         gap: 1rem;
@@ -211,6 +243,13 @@ import { Subject, takeUntil } from 'rxjs'
           position: relative;
           bottom: 2px;
         }
+      }
+
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--text-color);
       }
 
       .slider {
@@ -275,6 +314,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
     dateRange: [null],
     year: [null],
     month: [null],
+    searchTerm: [null],
     types: [null],
     environment: [RideEnvironment.ALL, Validators.required],
     bikes: [null],
@@ -282,6 +322,8 @@ export class FiltersComponent implements OnInit, OnDestroy {
     countries: [null],
     distance: [[0, 0]],
     elevation: [[0, 0]],
+    startHour: [[0, 24]],
+    hideCommutes: [false],
   })
 
   private shouldReset = false
@@ -305,6 +347,7 @@ export class FiltersComponent implements OnInit, OnDestroy {
       dateRange: [this.startDate, this.today],
       year: null,
       month: null,
+      searchTerm: null,
       types: null,
       environment: RideEnvironment.ALL,
       bikes: null,
@@ -312,6 +355,8 @@ export class FiltersComponent implements OnInit, OnDestroy {
       countries: null,
       distance: [0, this.maxDistance],
       elevation: [0, this.maxElevation],
+      startHour: [0, 24],
+      hideCommutes: false,
     })
     this.shouldReset = true
   }

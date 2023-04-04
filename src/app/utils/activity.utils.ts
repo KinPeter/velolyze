@@ -95,6 +95,26 @@ export function filterActivities(activities: Activity[], filters: ActivityFilter
     })
   }
 
+  if (filters.hideCommutes) {
+    result = result.filter(({ activity }) => !activity.commute)
+  }
+
+  if (filters.searchTerm !== null && filters.searchTerm.trim() !== '') {
+    result = result.filter(({ activity }) =>
+      activity.name
+        .toLocaleLowerCase()
+        .includes((filters.searchTerm as string).trim().toLocaleLowerCase())
+    )
+  }
+
+  if (filters.startHour[0] !== 0 || filters.startHour[1] !== 24) {
+    const [start, end] = filters.startHour
+    result = result.filter(({ activity }) => {
+      const activityStart = new Date(activity.start_date_local).getHours()
+      return activityStart >= start && activityStart <= end
+    })
+  }
+
   return result.filter(({ activity }) => {
     const { distance, total_elevation_gain: elevation } = activity
     const distanceKm = metersToKms(distance)

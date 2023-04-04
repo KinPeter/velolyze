@@ -29,6 +29,7 @@ export interface ActivityFilters {
   dateRange: [Date, Date] | null
   year: Date | null
   month: Date | null
+  searchTerm: string | null
   cities: string[] | null
   countries: string[] | null
   types: SportType[] | null
@@ -36,6 +37,8 @@ export interface ActivityFilters {
   bikes: string[] | null
   distance: [number, number]
   elevation: [number, number]
+  startHour: [number, number]
+  hideCommutes: boolean
 }
 
 export interface SportTypeOption {

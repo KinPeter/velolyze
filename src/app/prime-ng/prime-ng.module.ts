@@ -18,6 +18,8 @@ import { RadioButtonModule } from 'primeng/radiobutton'
 import { DropdownModule } from 'primeng/dropdown'
 import { MultiSelectModule } from 'primeng/multiselect'
 import { SliderModule } from 'primeng/slider'
+import { InputTextModule } from 'primeng/inputtext'
+import { InputSwitchModule } from 'primeng/inputswitch'
 
 @NgModule({
   declarations: [],
@@ -27,6 +29,8 @@ import { SliderModule } from 'primeng/slider'
     CalendarModule,
     CardModule,
     DropdownModule,
+    InputSwitchModule,
+    InputTextModule,
     MenuModule,
     MessageModule,
     MessagesModule,
@@ -46,6 +50,8 @@ import { SliderModule } from 'primeng/slider'
     CalendarModule,
     CardModule,
     DropdownModule,
+    InputSwitchModule,
+    InputTextModule,
     MenuModule,
     MessageModule,
     MessagesModule,
