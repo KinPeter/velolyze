@@ -11,7 +11,7 @@ import { StravaBikeData } from '../strava.types'
           <h4>No bikes registered</h4>
         </p-card>
         <p-card *ngFor="let bike of bikes" class="bike-card">
-          <h4>{{ bike.name }} <p-tag *ngIf="bike.primary" value="Primary"></p-tag></h4>
+          <h4>{{ bike.name }}</h4>
           <p>Distance: {{ bike.converted_distance }} km</p>
         </p-card>
       </div>

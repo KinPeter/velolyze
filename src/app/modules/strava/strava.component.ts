@@ -118,11 +118,8 @@ export class StravaComponent implements OnDestroy {
       .subscribe(async () => {
         this.athlete = await this.stravaApiService.fetchAthleteData()
         const { bikes } = this.athlete
-        const primaryIndex = bikes.findIndex(({ primary }) => primary)
-        const primaryBike = bikes[primaryIndex]
-        bikes.splice(primaryIndex, 1)
         bikes.sort((a, b) => b.converted_distance - a.converted_distance)
-        this.bikes = [primaryBike, ...bikes]
+        this.bikes = bikes
       })
   }
 
