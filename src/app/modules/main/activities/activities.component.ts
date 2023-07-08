@@ -49,7 +49,14 @@ import {
           <p-card>
             <p-tabView>
               <p-tabPanel header="List">
-                <p>You have {{ filteredActivities.length }} activities! Yeey</p>
+                <velo-activities-table
+                  *ngIf="filteredActivities.length"
+                  [activities]="filteredActivities"
+                ></velo-activities-table>
+                <section *ngIf="!filteredActivities.length" class="no-result">
+                  <p>There are no results.</p>
+                  <p><em>Maybe consider changing your filters?</em></p>
+                </section>
               </p-tabPanel>
               <p-tabPanel header="Charts"> Content 2 </p-tabPanel>
             </p-tabView>
@@ -72,6 +79,13 @@ import {
             padding: 0;
           }
         }
+      }
+
+      section.no-result {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3rem 0;
       }
     `,
   ],
@@ -98,8 +112,9 @@ export class ActivitiesComponent implements OnDestroy {
     private userMetaService: UserMetaService
   ) {
     this.activitiesService.activities$.pipe(takeUntil(this.unsubscribe$)).subscribe(activities => {
-      this.activities = activities
-      this.filteredActivities = [...activities]
+      const sortedActivities = activities.sort((a, b) => b.date - a.date)
+      this.activities = sortedActivities
+      this.filteredActivities = [...sortedActivities]
       this.totals = getTotals(activities.map(a => a.activity))
       this.filterOptions = getFilterOptions(activities)
     })

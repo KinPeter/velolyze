@@ -4,6 +4,7 @@ import { MainComponent } from './main.component'
 import { MeComponent } from './me/me.component'
 import { MainRoutingModule } from './main-routing.module'
 import { ActivitiesComponent } from './activities/activities.component'
+import { ActivitiesTableComponent } from './activities/components/activities-table.component'
 import { RoutesComponent } from './routes/routes.component'
 import { SharedModule } from '../shared/shared.module'
 import { NoDataComponent } from './common/no-data.component'
@@ -20,6 +21,7 @@ import { FiltersComponent } from './common/filters.component'
     MeComponent,
     NoDataComponent,
     ActivitiesComponent,
+    ActivitiesTableComponent,
     RoutesComponent,
     CalendarHeatmapComponent,
     VerticalTotalsCardComponent,

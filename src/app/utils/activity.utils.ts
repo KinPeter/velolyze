@@ -115,18 +115,20 @@ export function filterActivities(activities: Activity[], filters: ActivityFilter
     })
   }
 
-  return result.filter(({ activity }) => {
-    const { distance, total_elevation_gain: elevation } = activity
-    const distanceKm = metersToKms(distance)
-    const [minDistance, maxDistance] = filters.distance
-    const [minElevation, maxElevation] = filters.elevation
-    return (
-      distanceKm >= minDistance &&
-      distanceKm <= maxDistance &&
-      elevation >= minElevation &&
-      elevation <= maxElevation
-    )
-  })
+  return result
+    .filter(({ activity }) => {
+      const { distance, total_elevation_gain: elevation } = activity
+      const distanceKm = metersToKms(distance)
+      const [minDistance, maxDistance] = filters.distance
+      const [minElevation, maxElevation] = filters.elevation
+      return (
+        distanceKm >= minDistance &&
+        distanceKm <= maxDistance &&
+        elevation >= minElevation &&
+        elevation <= maxElevation
+      )
+    })
+    .sort((a, b) => b.date - a.date)
 }
 
 export function generateFilterTitle(filters: ActivityFilters): string {
