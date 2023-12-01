@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: 18.13.0
+          node-version: 18.14.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

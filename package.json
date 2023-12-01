@@ -1,6 +1,6 @@
 {
   "name": "velolyze",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Peter Kin",
   "description": "Web app to analyze cycling stats by consuming data from Strava",
   "repository": "https://github.com/KinPeter/velolyze",
@@ -18,8 +18,7 @@
     "prepare": "husky install"
   },
   "engines": {
-    "node": "18.13.0",
-    "npm": "8.19.3"
+    "node": "18.x"
   },
   "private": true,
   "dependencies": {

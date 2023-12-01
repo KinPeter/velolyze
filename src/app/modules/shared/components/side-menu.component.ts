@@ -22,6 +22,11 @@ import { AuthStore } from '../services/auth.store'
           class="p-button-secondary p-button-sm p-button-text"
           (click)="logOut()"
         ></button>
+        <img
+          src="/assets/api_logo_pwrdBy_strava_stack_gray.png"
+          alt="Powered by Strava"
+          class="powered-by-strava"
+        />
         <div *ngIf="isOpen" class="credits">
           v{{ version }} | With ❤️ by <a href="https://p-kin.com" target="_blank">P-Kin.com</a>
         </div>
@@ -62,7 +67,7 @@ import { AuthStore } from '../services/auth.store'
       }
 
       .menu {
-        padding: 5rem 1rem;
+        padding: 5rem 1rem 1rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -92,6 +97,10 @@ import { AuthStore } from '../services/auth.store'
 
         &:hover .credits {
           opacity: 1;
+        }
+
+        button {
+          margin-bottom: 1rem;
         }
       }
 

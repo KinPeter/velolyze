@@ -25,7 +25,9 @@ import { StravaSyncService } from './strava-sync.service'
     <ng-container *ngIf="(loading$ | async) === false && (disabled$ | async) === false">
       <section *ngIf="needAuth$ | async; else stravaContainer" class="need-auth">
         <p>In order to sync with Strava, you have to authorize Velolyze to access your data.</p>
-        <a pButton [href]="stravaOauthUrl">Log in to Strava</a>
+        <a [href]="stravaOauthUrl">
+          <img src="/assets/btn_strava_connectwith_light.png" alt="Connect with Strava" />
+        </a>
       </section>
       <ng-template #stravaContainer>
         <velo-strava-athlete *ngIf="athlete" [athlete]="athlete"></velo-strava-athlete>
